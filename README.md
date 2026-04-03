@@ -36,6 +36,8 @@ python3 scripts/install.py uninstall [--dry-run]
 - `toolbox/skills/agents-md-writer/`（`SKILL.md`, `scripts/check_agents_md.sh`, `references/agents-best-practices.md`）
 - `toolbox/skills/git-pr-worker/`（`SKILL.md`, `scripts/pr_precheck.sh`, `references/git-pr-best-practices.md`）
 - `toolbox/skills/skill-validation-worker/`（`SKILL.md`, `scripts/check-skill.sh`）
+- `toolbox/skills/ci-failure-triage-worker/`（`SKILL.md`, `scripts/triage-pr-ci.sh`）
+- `toolbox/skills/pr-quality-gate-worker/`（`SKILL.md`, `scripts/check-pr-quality.sh`）
 - `toolbox/hooks/preflight.sh`
 - `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
