@@ -1,3 +1,8 @@
+---
+name: skill-validation-worker
+description: スキル定義が雛形と運用ルールを満たしているかを検証する。
+---
+
 # skill-validation-worker
 
 目的: 新規/更新したスキルが運用基準を満たすかを、実装前後で一貫して検証する。

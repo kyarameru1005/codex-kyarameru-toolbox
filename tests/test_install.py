@@ -373,7 +373,7 @@ def test_check_skill_script_passes_for_valid_skill(tmp_path: Path):
     skill_dir = tmp_path / "toolbox" / "skills" / "sample-worker"
     (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
     (skill_dir / "SKILL.md").write_text(
-        "# sample-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
+        "---\nname: sample-worker\ndescription: test\n---\n\n# sample-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
         encoding="utf-8",
     )
     (skill_dir / "scripts" / "run-check.sh").write_text("#!/usr/bin/env bash\necho ok\n", encoding="utf-8")
@@ -400,7 +400,7 @@ def test_check_skill_script_fails_with_snake_case_script_name(tmp_path: Path):
     skill_dir = tmp_path / "toolbox" / "skills" / "sample-worker"
     (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
     (skill_dir / "SKILL.md").write_text(
-        "# sample-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
+        "---\nname: sample-worker\ndescription: test\n---\n\n# sample-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
         encoding="utf-8",
     )
     (skill_dir / "scripts" / "bad_name.sh").write_text("#!/usr/bin/env bash\necho bad\n", encoding="utf-8")
@@ -413,6 +413,32 @@ def test_check_skill_script_fails_with_snake_case_script_name(tmp_path: Path):
     )
     assert result.returncode != 0
     assert "script filename should be kebab-case" in result.stdout
+
+
+def test_check_skill_script_fails_when_frontmatter_name_mismatches(tmp_path: Path):
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "toolbox"
+        / "skills"
+        / "skill-validation-worker"
+        / "scripts"
+        / "check-skill.sh"
+    )
+    skill_dir = tmp_path / "toolbox" / "skills" / "sample-worker"
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: another-worker\ndescription: test\n---\n\n# sample-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(script), str(skill_dir)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert "frontmatter name must match directory name" in result.stdout
 
 
 def test_workflow_scripts_exist_and_executable():
