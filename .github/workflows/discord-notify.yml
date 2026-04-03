@@ -34,7 +34,7 @@ jobs:
 
       - name: Notify Discord
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ https://discord.com/api/webhooks/1489499504330674329/zjXcIMd_Cie0G38Gdq36e9kafucFWENPtnSLP-Edh5elsFAI2HhtgcWnj0ilV-AAmHld }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
