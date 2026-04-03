@@ -33,22 +33,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Notify Discord
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
+          if [[ -z "${DISCORD_WEBHOOK_URL:-}" ]]; then
+            echo "DISCORD_WEBHOOK_URL is not configured. Notification skipped."
+            exit 0
+          fi
           bash scripts/notify-discord.sh \
             --status "success" \
             --project "${{ github.repository }}" \
             --branch "${{ github.ref_name }}" \
             --summary "mainへpush: ${COMMIT_MESSAGE}" \
             --link "${RUN_URL}"
-
-      - name: Skip when webhook is not configured
-        if: ${{ secrets.DISCORD_WEBHOOK_URL == '' }}
-        run: echo "DISCORD_WEBHOOK_URL is not configured. Notification skipped."
 
   notify-manual:
     if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -58,17 +57,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Notify Discord
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
+          if [[ -z "${DISCORD_WEBHOOK_URL:-}" ]]; then
+            echo "DISCORD_WEBHOOK_URL is not configured. Notification skipped."
+            exit 0
+          fi
           bash scripts/notify-discord.sh \
             --status "${{ github.event.inputs.status }}" \
             --project "${{ github.repository }}" \
             --branch "${{ github.ref_name }}" \
             --summary "${{ github.event.inputs.summary }}" \
             --link "${{ github.event.inputs.link }}"
-
-      - name: Skip when webhook is not configured
-        if: ${{ secrets.DISCORD_WEBHOOK_URL == '' }}
-        run: echo "DISCORD_WEBHOOK_URL is not configured. Notification skipped."
