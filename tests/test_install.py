@@ -125,6 +125,46 @@ def test_dry_run_keeps_filesystem_clean(tmp_path: Path):
     assert not list((fake_home / ".codex").glob("AGENTS.md.bak.*"))
 
 
+def test_update_removes_stale_managed_paths(tmp_path: Path):
+    installer = load_module()
+    create_source_tree(tmp_path)
+    fake_home = tmp_path / "home"
+
+    installer.install(mode="copy", dry_run=False, root=tmp_path, home=fake_home)
+    stale_skill_dir = fake_home / ".codex" / "skills" / "mcp-worker"
+    assert stale_skill_dir.exists()
+
+    shutil_target = tmp_path / "toolbox" / "skills" / "mcp-worker"
+    if shutil_target.exists():
+        for child in sorted(shutil_target.rglob("*"), reverse=True):
+            if child.is_file() or child.is_symlink():
+                child.unlink()
+            elif child.is_dir():
+                child.rmdir()
+        shutil_target.rmdir()
+
+    installer.install(mode="copy", dry_run=False, root=tmp_path, home=fake_home, cleanup_stale=True)
+    assert not stale_skill_dir.exists()
+    assert (fake_home / ".codex" / "skills" / "plan-worker").exists()
+
+
+def test_update_dry_run_keeps_stale_managed_paths(tmp_path: Path):
+    installer = load_module()
+    create_source_tree(tmp_path)
+    fake_home = tmp_path / "home"
+
+    installer.install(mode="copy", dry_run=False, root=tmp_path, home=fake_home)
+    stale_skill_dir = fake_home / ".codex" / "skills" / "mcp-worker"
+    assert stale_skill_dir.exists()
+
+    source_stale = tmp_path / "toolbox" / "skills" / "mcp-worker"
+    source_stale.joinpath("SKILL.md").unlink()
+    source_stale.rmdir()
+
+    installer.install(mode="copy", dry_run=True, root=tmp_path, home=fake_home, cleanup_stale=True)
+    assert stale_skill_dir.exists()
+
+
 def test_uninstall_removes_only_managed(tmp_path: Path):
     installer = load_module()
     create_source_tree(tmp_path)
@@ -258,3 +298,39 @@ def test_policy_check_fails_when_pr_template_lacks_required_section(tmp_path: Pa
     )
     assert result.returncode != 0
     assert "pr template has 検証結果 section" in result.stdout
+
+
+def test_check_agents_md_script_passes_with_required_content(tmp_path: Path):
+    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh"
+    target = tmp_path / "AGENTS.md"
+    target.write_text(
+        "# AGENTS\n目的\n優先\n応答\n実行\nGit\nログ\n命名\nkebab-case\nPR本文を正本とする\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(script), str(target)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "[OK] AGENTS.md check passed" in result.stdout
+
+
+def test_check_agents_md_script_fails_when_ambiguous_phrase_exists(tmp_path: Path):
+    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh"
+    target = tmp_path / "AGENTS.md"
+    target.write_text(
+        "# AGENTS\n目的\n優先\n応答\n実行\nGit\nログ\n命名\nkebab-case\n必要に応じて判断する\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(script), str(target)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert "ambiguous phrase found: 必要に応じて" in result.stdout

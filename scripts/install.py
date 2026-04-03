@@ -125,6 +125,28 @@ def is_managed(path: Path, managed_set: set[str]) -> bool:
     return str(path) in managed_set
 
 
+def cleanup_stale_managed_paths(desired_paths: set[Path], dry_run: bool, home: Path | None = None) -> None:
+    mpath = manifest_path(home)
+    manifest = read_manifest(mpath)
+    existing_managed = [Path(p) for p in manifest.get("paths", [])]
+    stale_paths = [p for p in existing_managed if p not in desired_paths]
+
+    for path in sorted(stale_paths, key=lambda p: len(str(p)), reverse=True):
+        if not path.exists() and not path.is_symlink():
+            print(f"[SKIP] stale managed already missing: {path}")
+            continue
+
+        if dry_run:
+            print(f"[DRY-RUN] remove stale managed: {path}")
+            continue
+
+        if path.is_symlink() or path.is_file():
+            path.unlink()
+        else:
+            shutil.rmtree(path)
+        print(f"[INFO] removed stale managed: {path}")
+
+
 def copy_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str:
     src = entry.source
     dst = entry.target
@@ -196,7 +218,13 @@ def link_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str
     return f"[INFO] linked: {dst} -> {src}"
 
 
-def install(mode: str, dry_run: bool, root: Path | None = None, home: Path | None = None) -> int:
+def install(
+    mode: str,
+    dry_run: bool,
+    root: Path | None = None,
+    home: Path | None = None,
+    cleanup_stale: bool = False,
+) -> int:
     entries = iter_source_entries(root=root, home=home)
     manifest = read_manifest(manifest_path(home))
     managed_set = set(manifest.get("paths", []))
@@ -206,6 +234,10 @@ def install(mode: str, dry_run: bool, root: Path | None = None, home: Path | Non
         return 0
 
     managed_paths: list[Path] = []
+    if cleanup_stale:
+        desired_paths = {entry.target for entry in entries}
+        cleanup_stale_managed_paths(desired_paths=desired_paths, dry_run=dry_run, home=home)
+
     for entry in entries:
         if mode == "copy":
             msg = copy_entry(entry, managed_set, dry_run)
@@ -301,8 +333,10 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
 
-    if args.command in {"install", "update"}:
-        return install(mode=args.mode, dry_run=args.dry_run)
+    if args.command == "install":
+        return install(mode=args.mode, dry_run=args.dry_run, cleanup_stale=False)
+    if args.command == "update":
+        return install(mode=args.mode, dry_run=args.dry_run, cleanup_stale=True)
     if args.command == "status":
         return status()
     if args.command == "uninstall":
