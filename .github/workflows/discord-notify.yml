@@ -20,11 +20,9 @@ on:
       summary:
         description: "通知サマリ"
         required: true
-        type: string
       link:
         description: "任意の詳細URL"
         required: false
-        type: string
 
 jobs:
   notify-workflow-run:
