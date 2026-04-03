@@ -105,6 +105,31 @@ gh pr create --title "<title>" --body-file docs/pr-template.md
 bash scripts/create-pr.sh "<title>"
 ```
 
+## 修正の標準作業フロー（ブランチ分離 -> PR）
+
+1. 作業ブランチを作成する。
+
+```bash
+bash scripts/start-branch.sh fix <topic>
+```
+
+2. 実装・修正を行う。
+3. 台帳を更新する（着手前/完了時に `docs/task-list.md`、必要なら `~/.codex/repo-task-index.md`）。
+4. 検証・commit・push・PR作成までを実行する。
+
+```bash
+bash scripts/finish-pr.sh \
+  --commit "<commit message>" \
+  --pr "<pr title>" \
+  --file README.md \
+  --file scripts/example.sh
+```
+
+オプション:
+- `--draft`: Draft PRで作成
+- `--base <branch>`: PRのbaseブランチを指定（既定: `main`）
+- `--skip-verify`: `pytest` と `policy-check` をスキップ（通常は非推奨）
+
 ## CI
 
 GitHub Actions で `push` / `pull_request` 時にテストを自動実行します。

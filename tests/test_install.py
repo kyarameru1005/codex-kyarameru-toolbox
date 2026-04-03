@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import importlib.util
 import json
 import subprocess
@@ -396,3 +397,14 @@ def test_check_skill_script_fails_with_snake_case_script_name(tmp_path: Path):
     )
     assert result.returncode != 0
     assert "script filename should be kebab-case" in result.stdout
+
+
+def test_workflow_scripts_exist_and_executable():
+    root = Path(__file__).resolve().parents[1]
+    start_script = root / "scripts" / "start-branch.sh"
+    finish_script = root / "scripts" / "finish-pr.sh"
+
+    assert start_script.exists()
+    assert finish_script.exists()
+    assert os.access(start_script, os.X_OK)
+    assert os.access(finish_script, os.X_OK)
