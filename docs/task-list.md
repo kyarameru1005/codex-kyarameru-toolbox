@@ -25,6 +25,8 @@
 - [x] `T-011` [medium] `policy-check` / テストに新スキル検証のチェックを追加する
 - [x] `T-012` [high] 修正作業フロー（ブランチ分離→検証→PR）をスクリプト化する
 - [x] `T-013` [medium] 作業フローを README に追記し、実行可能性をテストで担保する
+- [x] `T-014` [high] `ci-failure-triage-worker` を追加する
+- [x] `T-015` [high] `pr-quality-gate-worker` を追加する
 
 ## メモ
 
@@ -32,3 +34,4 @@
 - 2026-04-03: 優先度順（高→中）で `T-003` 〜 `T-008` を実施。
 - 2026-04-03: 全体整理として `T-009` 〜 `T-011` を実施。
 - 2026-04-03: 標準作業フローの実行スクリプト（`start-branch.sh`, `finish-pr.sh`）を追加。
+- 2026-04-03: `ci-failure-triage-worker` と `pr-quality-gate-worker` を追加。

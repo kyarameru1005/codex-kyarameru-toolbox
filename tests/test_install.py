@@ -216,6 +216,14 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
         "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock skill check: $1\"\n",
     )
     write_file(
+        tmp_path / "toolbox" / "skills" / "ci-failure-triage-worker" / "scripts" / "triage-pr-ci.sh",
+        "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock triage: $1\"\n",
+    )
+    write_file(
+        tmp_path / "toolbox" / "skills" / "pr-quality-gate-worker" / "scripts" / "check-pr-quality.sh",
+        "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock quality gate\"\n",
+    )
+    write_file(
         tmp_path / "docs" / "pr-template.md",
         "## 目的\n- test\n\n## 主な変更点\n- test\n\n## 検証結果\n- test\n",
     )
@@ -232,6 +240,14 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
     )
     subprocess.run(
         ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "skill-validation-worker" / "scripts" / "check-skill.sh")],
+        check=True,
+    )
+    subprocess.run(
+        ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "ci-failure-triage-worker" / "scripts" / "triage-pr-ci.sh")],
+        check=True,
+    )
+    subprocess.run(
+        ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "pr-quality-gate-worker" / "scripts" / "check-pr-quality.sh")],
         check=True,
     )
 
@@ -403,8 +419,58 @@ def test_workflow_scripts_exist_and_executable():
     root = Path(__file__).resolve().parents[1]
     start_script = root / "scripts" / "start-branch.sh"
     finish_script = root / "scripts" / "finish-pr.sh"
+    triage_script = root / "toolbox" / "skills" / "ci-failure-triage-worker" / "scripts" / "triage-pr-ci.sh"
+    quality_script = root / "toolbox" / "skills" / "pr-quality-gate-worker" / "scripts" / "check-pr-quality.sh"
 
     assert start_script.exists()
     assert finish_script.exists()
+    assert triage_script.exists()
+    assert quality_script.exists()
     assert os.access(start_script, os.X_OK)
     assert os.access(finish_script, os.X_OK)
+    assert os.access(triage_script, os.X_OK)
+    assert os.access(quality_script, os.X_OK)
+
+
+def test_check_pr_quality_passes_with_valid_body_file(tmp_path: Path):
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "toolbox"
+        / "skills"
+        / "pr-quality-gate-worker"
+        / "scripts"
+        / "check-pr-quality.sh"
+    )
+    body = tmp_path / "body.md"
+    body.write_text(
+        "## 目的\n- test\n\n## 主な変更点\n- test\n\n## 検証結果\n- 実行コマンド: pytest -q\n- 結果: pass\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(script), "--body-file", str(body)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "[OK] PR quality gate passed" in result.stdout
+
+
+def test_triage_pr_ci_requires_pr_argument():
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "toolbox"
+        / "skills"
+        / "ci-failure-triage-worker"
+        / "scripts"
+        / "triage-pr-ci.sh"
+    )
+    result = subprocess.run(
+        ["bash", str(script)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    assert "Usage:" in result.stdout
