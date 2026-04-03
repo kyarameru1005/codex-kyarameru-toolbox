@@ -27,6 +27,8 @@
 - [x] `T-013` [medium] 作業フローを README に追記し、実行可能性をテストで担保する
 - [x] `T-014` [high] `ci-failure-triage-worker` を追加する
 - [x] `T-015` [high] `pr-quality-gate-worker` を追加する
+- [x] `T-016` [high] 新規スキルの `SKILL.md` を雛形（frontmatter）準拠に修正する
+- [x] `T-017` [medium] `check-skill.sh` に frontmatter 必須チェックを追加する
 
 ## メモ
 
@@ -35,3 +37,4 @@
 - 2026-04-03: 全体整理として `T-009` 〜 `T-011` を実施。
 - 2026-04-03: 標準作業フローの実行スクリプト（`start-branch.sh`, `finish-pr.sh`）を追加。
 - 2026-04-03: `ci-failure-triage-worker` と `pr-quality-gate-worker` を追加。
+- 2026-04-03: スキル雛形崩れの修正（frontmatter統一 + 検証強化）を実施。
