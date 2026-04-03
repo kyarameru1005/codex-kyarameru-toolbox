@@ -211,6 +211,10 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
         "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock check: $1\"\n",
     )
     write_file(
+        tmp_path / "toolbox" / "skills" / "skill-validation-worker" / "scripts" / "check-skill.sh",
+        "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock skill check: $1\"\n",
+    )
+    write_file(
         tmp_path / "docs" / "pr-template.md",
         "## 目的\n- test\n\n## 主な変更点\n- test\n\n## 検証結果\n- test\n",
     )
@@ -223,6 +227,10 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "policy-check.sh")], check=True)
     subprocess.run(
         ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh")],
+        check=True,
+    )
+    subprocess.run(
+        ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "skill-validation-worker" / "scripts" / "check-skill.sh")],
         check=True,
     )
 
@@ -334,3 +342,57 @@ def test_check_agents_md_script_fails_when_ambiguous_phrase_exists(tmp_path: Pat
     )
     assert result.returncode != 0
     assert "ambiguous phrase found: 必要に応じて" in result.stdout
+
+
+def test_check_skill_script_passes_for_valid_skill(tmp_path: Path):
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "toolbox"
+        / "skills"
+        / "skill-validation-worker"
+        / "scripts"
+        / "check-skill.sh"
+    )
+    skill_dir = tmp_path / "toolbox" / "skills" / "sample-worker"
+    (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
+    (skill_dir / "SKILL.md").write_text(
+        "# sample-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
+        encoding="utf-8",
+    )
+    (skill_dir / "scripts" / "run-check.sh").write_text("#!/usr/bin/env bash\necho ok\n", encoding="utf-8")
+
+    result = subprocess.run(
+        ["bash", str(script), str(skill_dir)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "[OK] skill validation passed" in result.stdout
+
+
+def test_check_skill_script_fails_with_snake_case_script_name(tmp_path: Path):
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "toolbox"
+        / "skills"
+        / "skill-validation-worker"
+        / "scripts"
+        / "check-skill.sh"
+    )
+    skill_dir = tmp_path / "toolbox" / "skills" / "sample-worker"
+    (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
+    (skill_dir / "SKILL.md").write_text(
+        "# sample-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
+        encoding="utf-8",
+    )
+    (skill_dir / "scripts" / "bad_name.sh").write_text("#!/usr/bin/env bash\necho bad\n", encoding="utf-8")
+
+    result = subprocess.run(
+        ["bash", str(script), str(skill_dir)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert "script filename should be kebab-case" in result.stdout

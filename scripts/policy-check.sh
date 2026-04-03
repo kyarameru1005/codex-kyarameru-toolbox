@@ -36,6 +36,7 @@ check_file "AGENTS.md"
 check_file "toolbox/AGENTS.md"
 check_file ".github/workflows/tests.yml"
 check_file "toolbox/skills/agents-md-writer/scripts/check_agents_md.sh"
+check_file "toolbox/skills/skill-validation-worker/scripts/check-skill.sh"
 check_file "docs/pr-template.md"
 check_file "scripts/create-pr.sh"
 
