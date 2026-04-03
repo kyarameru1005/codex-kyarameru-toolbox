@@ -25,18 +25,24 @@ python3 scripts/install.py uninstall [--dry-run]
 ```
 
 - `install`: `toolbox/` 配下を `~/.codex` へ配備
-- `update`: `install` を再実行
+- `update`: `install` を再実行し、旧マニフェストにのみ存在する古い配備物をクリーンアップ
 - `status`: 配備状態を表示
 - `uninstall`: マニフェストに記録された管理対象のみ削除
 
 ## 初期同梱内容
 
-- `toolbox/skills/plan-worker/SKILL.md`
-- `toolbox/skills/mcp-worker/SKILL.md`
+- `toolbox/skills/plan-worker/`（`SKILL.md`）
+- `toolbox/skills/mcp-worker/`（`SKILL.md`）
+- `toolbox/skills/agents-md-writer/`（`SKILL.md`, `scripts/check_agents_md.sh`, `references/agents-best-practices.md`）
+- `toolbox/skills/git-pr-worker/`（`SKILL.md`, `scripts/pr_precheck.sh`, `references/git-pr-best-practices.md`）
 - `toolbox/hooks/preflight.sh`
 - `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
 `~/.codex/AGENTS.md` が既存の場合、`AGENTS.md.bak.<timestamp>` を作成してから置き換えます。
+
+AGENTS の管理方針:
+- リポジトリ運用ルールの正本は `AGENTS.md`（プロジェクト用）
+- 配備用グローバルルールの正本は `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
 ## テスト
 
@@ -68,6 +74,24 @@ bash scripts/harness.sh --quick
 トラブルシュート:
 - `No module named pytest` の場合は `.venv` を有効化して `python -m pip install -e '.[dev]'` を実行する。
 - `scripts/harness.sh` は `.venv/bin/python` が存在すれば自動で優先利用する。
+
+policy チェックのみを単体実行する場合:
+
+```bash
+bash scripts/policy-check.sh
+```
+
+PR作成時はテンプレートを使う:
+
+```bash
+gh pr create --title "<title>" --body-file docs/pr-template.md
+```
+
+補助スクリプトでPR作成する場合:
+
+```bash
+bash scripts/create-pr.sh "<title>"
+```
 
 ## CI
 
