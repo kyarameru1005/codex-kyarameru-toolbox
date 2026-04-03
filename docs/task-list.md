@@ -29,6 +29,8 @@
 - [x] `T-015` [high] `pr-quality-gate-worker` を追加する
 - [x] `T-016` [high] 新規スキルの `SKILL.md` を雛形（frontmatter）準拠に修正する
 - [x] `T-017` [medium] `check-skill.sh` に frontmatter 必須チェックを追加する
+- [x] `T-018` [medium] Discord Webhook 通知（MCPなし）を追加する（`scripts/notify-discord.sh` と `.github/workflows/discord-notify.yml`）
+- [x] `T-019` [medium] PR作成時にPRリンクをDiscord通知するワークフローを追加する（`.github/workflows/pr-discord-notify.yml`）
 
 ## メモ
 
@@ -38,3 +40,5 @@
 - 2026-04-03: 標準作業フローの実行スクリプト（`start-branch.sh`, `finish-pr.sh`）を追加。
 - 2026-04-03: `ci-failure-triage-worker` と `pr-quality-gate-worker` を追加。
 - 2026-04-03: スキル雛形崩れの修正（frontmatter統一 + 検証強化）を実施。
+- 2026-04-03: Discord Webhook 通知スクリプトと GitHub Actions 通知ワークフローを追加。
+- 2026-04-03: PR作成時にPRリンクを送る `pr-discord-notify.yml` を追加。
