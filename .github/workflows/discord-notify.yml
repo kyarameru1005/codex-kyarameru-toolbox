@@ -56,12 +56,15 @@ jobs:
         if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          WORKFLOW_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: |
           bash scripts/notify-discord.sh \
             --status "${{ steps.resolve-status.outputs.value }}" \
             --project "${{ github.repository }}" \
-            --branch "${{ github.event.workflow_run.head_branch }}" \
-            --summary "ワークフロー=${{ github.event.workflow_run.name }} 結果=${{ github.event.workflow_run.conclusion }}" \
+            --branch "${WORKFLOW_HEAD_BRANCH}" \
+            --summary "ワークフロー=${WORKFLOW_NAME} 結果=${WORKFLOW_CONCLUSION}" \
             --link "${{ steps.run-url.outputs.url }}"
 
       - name: Skip when webhook is not configured
