@@ -35,6 +35,7 @@ python3 scripts/install.py uninstall [--dry-run]
 - `toolbox/skills/mcp-worker/`（`SKILL.md`）
 - `toolbox/skills/agents-md-writer/`（`SKILL.md`, `scripts/check_agents_md.sh`, `references/agents-best-practices.md`）
 - `toolbox/skills/git-pr-worker/`（`SKILL.md`, `scripts/pr_precheck.sh`, `references/git-pr-best-practices.md`）
+- `toolbox/skills/skill-validation-worker/`（`SKILL.md`, `scripts/check-skill.sh`）
 - `toolbox/hooks/preflight.sh`
 - `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
@@ -43,6 +44,17 @@ python3 scripts/install.py uninstall [--dry-run]
 AGENTS の管理方針:
 - リポジトリ運用ルールの正本は `AGENTS.md`（プロジェクト用）
 - 配備用グローバルルールの正本は `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
+
+## タスク台帳運用
+
+- 着手前・完了時に `docs/task-list.md` を更新する。
+- 新規タスク追加・完了・優先度変更時は `~/.codex/repo-task-index.md` も同一作業内で同期する。
+
+## スキル作成時の検証
+
+```bash
+bash toolbox/skills/skill-validation-worker/scripts/check-skill.sh toolbox/skills/<skill-name>
+```
 
 ## テスト
 
