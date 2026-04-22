@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "リクエスト識別子"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["verify", "construct", "explore", "formalize"],
+      "description": "実行モード"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "partial", "blocked"],
+      "description": "処理の完了状態"
+    },
+    "topic": {
+      "type": "string",
+      "description": "証明の対象（定理名・概念名等）"
+    },
+    "result": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "結果の要約"
+        },
+        "proof_structure": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": { "type": "integer", "description": "ステップ番号" },
+              "statement": { "type": "string", "description": "主張" },
+              "justification": { "type": "string", "description": "根拠" },
+              "status": {
+                "type": "string",
+                "enum": ["valid", "invalid", "gap", "needs_review"],
+                "description": "ステップの検証状態"
+              }
+            }
+          },
+          "description": "証明の構造（ステップごと）"
+        },
+        "techniques_used": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "使用した証明技法"
+        },
+        "theorems_referenced": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "description": "定理名" },
+              "statement": { "type": "string", "description": "定理の主張" }
+            }
+          },
+          "description": "参照した定理・補題"
+        },
+        "assumptions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "前提・仮定"
+        },
+        "related_concepts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "関連概念（探索モード）"
+        }
+      },
+      "description": "分析・証明結果"
+    },
+    "issues_found": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["gap", "error", "circular", "unjustified", "ambiguous"],
+            "description": "問題の種類"
+          },
+          "location": { "type": "string", "description": "問題箇所" },
+          "description": { "type": "string", "description": "問題の説明" },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "major", "minor"],
+            "description": "深刻度"
+          },
+          "suggestion": { "type": "string", "description": "修正提案" }
+        }
+      },
+      "description": "発見された問題点"
+    },
+    "artifacts_created": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "作成した成果物のパスリスト"
+    },
+    "next_action": {
+      "type": "string",
+      "description": "次のアクション提案 (proceed, clarify, blocked)"
+    }
+  },
+  "required": [
+    "request_id",
+    "mode",
+    "status",
+    "topic",
+    "result",
+    "issues_found",
+    "artifacts_created",
+    "next_action"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "tailwind-mcp-server": {
+      "command": "npx",
+      "args": ["tailwind-mcp-server"],
+      "description": "Tailwind CSSコンポーネント生成、クラス最適化、テーマ作成"
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn"],
+      "description": "shadcn/uiコンポーネント検索・インストール"
+    },
+    "a11y-mcp": {
+      "command": "npx",
+      "args": ["-y", "a11y-mcp-server"],
+      "description": "WCAG準拠チェック、アクセシビリティ監査"
+    },
+    "lighthouse-mcp": {
+      "command": "npx",
+      "args": ["-y", "@danielsogl/lighthouse-mcp"],
+      "description": "パフォーマンス監査、Core Web Vitals、SEO分析"
+    },
+    "mcp-color-convert": {
+      "command": "npx",
+      "args": ["-y", "mcp-color-convert"],
+      "description": "カラーパレット生成、色形式変換、WCAG対比チェック"
+    },
+    "svgmaker-mcp": {
+      "command": "npx",
+      "args": ["-y", "@genwavellc/svgmaker-mcp"],
+      "description": "AI駆動SVG生成・編集"
+    },
+    "mermaid-mcp": {
+      "command": "npx",
+      "args": ["-y", "mermaid-mcp"],
+      "description": "図表・ダイアグラム生成（22+種類）"
+    },
+    "mcp-image-optimizer": {
+      "command": "npx",
+      "args": ["-y", "mcp-image-optimizer"],
+      "description": "Sharp使用の画像最適化・変換"
+    }
+  }
+}

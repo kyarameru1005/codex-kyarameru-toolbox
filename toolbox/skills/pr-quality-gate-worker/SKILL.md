@@ -1,6 +1,6 @@
 ---
 name: pr-quality-gate-worker
-description: PR本文の必須セクションと検証記載をチェックし、レビュー前の品質ゲートを提供する。
+description: PR本文と差分の最低品質ゲートを事前に検証し、レビュー差し戻しを減らす
 ---
 
 # pr-quality-gate-worker

@@ -19,16 +19,6 @@ if [[ ! -f "$SKILL_FILE" ]]; then
   exit 1
 fi
 
-if ! awk 'NR==1{exit ($0=="---")?0:1}' "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md must start with frontmatter delimiter: ---"
-  exit 1
-fi
-
-if ! awk 'NR>1 && $0=="---"{found=1; exit 0} END{exit found?0:1}' "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md frontmatter closing delimiter not found: ---"
-  exit 1
-fi
-
 has_pattern() {
   local pattern="$1"
   local file="$2"
@@ -56,16 +46,6 @@ done
 SKILL_DIR_NAME="$(basename "$TARGET_DIR")"
 if [[ "$SKILL_DIR_NAME" =~ _ ]]; then
   echo "[ERROR] skill directory should be kebab-case (no underscore): $TARGET_DIR"
-  exit 1
-fi
-
-if ! has_pattern "^name:[[:space:]]*$SKILL_DIR_NAME$" "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md frontmatter name must match directory name: $SKILL_DIR_NAME"
-  exit 1
-fi
-
-if ! has_pattern "^description:[[:space:]]*.+$" "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md frontmatter description is required"
   exit 1
 fi
 

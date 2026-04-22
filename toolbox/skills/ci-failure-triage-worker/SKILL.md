@@ -1,6 +1,6 @@
 ---
 name: ci-failure-triage-worker
-description: PRのCI失敗を切り分け、失敗ジョブと再現コマンドを素早く提示する。
+description: PRのCI失敗を短時間で切り分け、再現コマンドと次アクションを提示する
 ---
 
 # ci-failure-triage-worker

@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "hooks": {
+    "spec-plan": {
+      "pre": [],
+      "post": ["codex-notify.sh"]
+    },
+    "spec-go": {
+      "pre": [],
+      "post": []
+    }
+  },
+  "session": {
+    "start": "codex-notify.sh",
+    "stop": "codex-notify.sh"
+  }
+}

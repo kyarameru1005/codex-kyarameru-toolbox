@@ -1,3 +1,8 @@
+---
+name: agents-md-writer
+description: AGENTS.md 作成・更新のためのヒアリング主導スキル
+---
+
 # agents-md-writer
 
 目的: 各リポジトリ向け `AGENTS.md` を、ベストプラクティス中心のヒアリングで作成し、最後に自己チェックまで行う。

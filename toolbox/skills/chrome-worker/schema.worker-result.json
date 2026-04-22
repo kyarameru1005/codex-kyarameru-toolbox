@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ChromeWorkerResult",
+  "description": "Chrome Worker の最終出力スキーマ",
+  "type": "object",
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "リクエスト識別子"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "error"],
+      "description": "処理結果のステータス"
+    },
+    "summary": {
+      "type": "string",
+      "description": "結果の要約（1-2文）"
+    },
+    "answer_markdown": {
+      "type": "string",
+      "description": "詳細な回答（Markdown形式）"
+    },
+    "screenshots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "記録したスクリーンショット/GIFのパス"
+    },
+    "console_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "検出したコンソールエラー"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "エラー時のメッセージ（status=error時のみ）"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "訪問したURLのリスト"
+    }
+  },
+  "required": ["request_id", "status", "summary", "answer_markdown"],
+  "additionalProperties": false
+}
