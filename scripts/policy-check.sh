@@ -39,6 +39,7 @@ check_file "toolbox/skills/agents-md-writer/scripts/check_agents_md.sh"
 check_file "toolbox/skills/skill-validation-worker/scripts/check-skill.sh"
 check_file "toolbox/skills/ci-failure-triage-worker/scripts/triage-pr-ci.sh"
 check_file "toolbox/skills/pr-quality-gate-worker/scripts/check-pr-quality.sh"
+check_file "toolbox/skills/harness-report-writer/SKILL.md"
 check_file "docs/pr-template.md"
 check_file "scripts/create-pr.sh"
 
@@ -58,5 +59,27 @@ PR_TEMPLATE_FILE="docs/pr-template.md"
 check_pattern "^## 目的" "$PR_TEMPLATE_FILE" "pr template has 目的 section"
 check_pattern "^## 主な変更点" "$PR_TEMPLATE_FILE" "pr template has 主な変更点 section"
 check_pattern "^## 検証結果" "$PR_TEMPLATE_FILE" "pr template has 検証結果 section"
+
+echo "[CHECK] harness-report-writer location is toolbox/skills only"
+harness_locations="$(
+  (
+    find . -type d -name 'harness-report-writer' \
+      -not -path './.git/*' \
+      -not -path './.venv/*' \
+      -not -path './toolbox/tmp/*' \
+      -not -path './toolbox/.codex/*' \
+      -not -path './toolbox/.tmp/*' \
+      2>/dev/null || true
+  ) \
+    | sed 's#^\./##' \
+    | sort
+)"
+if [[ "$harness_locations" != "toolbox/skills/harness-report-writer" ]]; then
+  echo "[ERROR] harness-report-writer must exist only at toolbox/skills/harness-report-writer"
+  echo "[ERROR] found:"
+  printf '%s\n' "$harness_locations"
+  exit 1
+fi
+echo "[OK] harness-report-writer location"
 
 echo "[DONE] policy checks passed"

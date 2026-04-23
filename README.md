@@ -71,6 +71,8 @@ python3 -m pytest -q
 
 検証を `smoke -> regression -> policy` の順で実行します。
 
+ハーネス仕様は `docs/harness-spec.md` を参照します。
+
 ```bash
 bash scripts/harness.sh
 ```
@@ -117,11 +119,21 @@ bash toolbox/skills/harness-report-writer/scripts/write-report.sh \
 ```bash
 bash scripts/report-validate-apply.sh \
   --title harness-daily \
+  --worker auto \
   --quick
 ```
 
 - `--quick`: `pytest` とフルハーネスを省略し、`policy-check` と `harness --quick` で高速確認
-- 省略時: `pytest` と `bash scripts/harness.sh` を実行してから `python3 scripts/install.py update` で適用
+- `--worker`: `auto|lite|standard`（既定: `auto`）
+- `--worker auto` の判定:
+  - `changed_files <= 2`
+  - `estimated_diff_lines <= 150`
+  - `--quick`（`pytest` 不要）
+  - 条件を満たす場合は `harness-worker-lite`、それ以外は `harness-worker`
+- 既定では `~/.codex` へ反映しない
+- 反映したい場合のみ `--apply` を指定する
+- `--apply` 指定時: 最後に `python3 scripts/install.py update` を実行
+- 実行メトリクスは `docs/harness-reports/metrics/<YYYY-MM>.jsonl` に保存
 
 PR作成時はテンプレートを使う:
 
