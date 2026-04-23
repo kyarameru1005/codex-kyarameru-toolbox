@@ -10,7 +10,7 @@ Codex 専用の個人ツールボックスです。`~/.codex` へスキルとフ
 ## クイックスタート
 
 ```bash
-cd /Users/ryukisato/deta_box/Project/kyarameru-tool-box
+cd ~/deta_box/Project/kyarameru-tool-box
 python3 scripts/install.py install
 python3 scripts/install.py status
 ```
