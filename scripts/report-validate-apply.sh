@@ -185,6 +185,9 @@ if [[ -z "$REPORT_PATH" ]]; then
   exit 1
 fi
 
+echo "[STEP] secret check"
+bash scripts/secret-check.sh
+
 echo "[STEP] policy check"
 bash scripts/policy-check.sh
 

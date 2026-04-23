@@ -24,6 +24,20 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_CONFIG: scripts/gitleaks.toml
+
+      - name: Run regex secret check
+        run: bash scripts/secret-check.sh --patterns-only
+
   harness:
     runs-on: ubuntu-latest
     steps:

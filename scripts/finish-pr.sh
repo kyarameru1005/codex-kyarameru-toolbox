@@ -97,6 +97,9 @@ if [[ $SKIP_VERIFY -eq 0 ]]; then
     python3 -m pytest -q
   fi
 
+  echo "[INFO] run secret check"
+  bash scripts/secret-check.sh
+
   echo "[INFO] run policy check"
   bash scripts/policy-check.sh
 else
