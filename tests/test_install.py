@@ -224,6 +224,10 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
         "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock quality gate\"\n",
     )
     write_file(
+        tmp_path / "toolbox" / "skills" / "harness-report-writer" / "SKILL.md",
+        "# harness-report-writer\n",
+    )
+    write_file(
         tmp_path / "docs" / "pr-template.md",
         "## 目的\n- test\n\n## 主な変更点\n- test\n\n## 検証結果\n- test\n",
     )
