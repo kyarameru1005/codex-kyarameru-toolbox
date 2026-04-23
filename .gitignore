@@ -13,6 +13,7 @@ toolbox/.codex/
 toolbox/.tmp/
 toolbox/log/
 toolbox/sessions/
+toolbox/vendor_imports/skills-curated-cache.json
 toolbox/shell_snapshots/
 toolbox/sqlite/
 toolbox/tmp/
