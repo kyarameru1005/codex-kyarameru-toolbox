@@ -9,3 +9,12 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+toolbox/.codex/
+toolbox/.tmp/
+toolbox/log/
+toolbox/sessions/
+toolbox/shell_snapshots/
+toolbox/sqlite/
+toolbox/tmp/
+toolbox/harness/output/*
+!toolbox/harness/output/.gitkeep
