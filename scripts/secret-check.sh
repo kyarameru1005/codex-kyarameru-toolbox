@@ -67,9 +67,16 @@ run_pattern_check() {
   local pattern="$1"
   local label="$2"
   echo "[CHECK] $label"
-  if xargs -0 rg -n --pcre2 --color=never -- "$pattern" < "$TMP_LIST"; then
-    echo "[ERROR] detected by pattern: $label"
-    exit 1
+  if command -v rg >/dev/null 2>&1; then
+    if xargs -0 rg -n --pcre2 --color=never -- "$pattern" < "$TMP_LIST"; then
+      echo "[ERROR] detected by pattern: $label"
+      exit 1
+    fi
+  else
+    if xargs -0 grep -nE -- "$pattern" < "$TMP_LIST"; then
+      echo "[ERROR] detected by pattern: $label"
+      exit 1
+    fi
   fi
   echo "[OK] $label"
 }

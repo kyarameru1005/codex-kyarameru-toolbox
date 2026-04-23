@@ -235,8 +235,22 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
         tmp_path / "scripts" / "create-pr.sh",
         "#!/usr/bin/env bash\nset -euo pipefail\necho \"mock\"\n",
     )
+    write_file(
+        tmp_path / "scripts" / "secret-check.sh",
+        "#!/usr/bin/env bash\nset -euo pipefail\necho \"[DONE] secret checks passed\"\n",
+    )
+    write_file(
+        tmp_path / "scripts" / "gitleaks.toml",
+        "title = \"test\"\n",
+    )
+    write_file(
+        tmp_path / "scripts" / "harness.sh",
+        "#!/usr/bin/env bash\nset -euo pipefail\nbash scripts/secret-check.sh\n",
+    )
     write_file(tmp_path / "scripts" / "policy-check.sh", policy_script.read_text(encoding="utf-8"))
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "create-pr.sh")], check=True)
+    subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "secret-check.sh")], check=True)
+    subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "harness.sh")], check=True)
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "policy-check.sh")], check=True)
     subprocess.run(
         ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh")],
@@ -259,7 +273,7 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
 def test_policy_check_passes_with_required_files_and_workflow(tmp_path: Path):
     setup_policy_repo(
         tmp_path,
-        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  harness:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/harness.sh\n  agents-policy:\n    runs-on: ubuntu-latest\n",
+        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  secret-scan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/secret-check.sh --patterns-only\n  harness:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/harness.sh\n  agents-policy:\n    runs-on: ubuntu-latest\n",
     )
 
     result = subprocess.run(
@@ -276,7 +290,7 @@ def test_policy_check_passes_with_required_files_and_workflow(tmp_path: Path):
 def test_policy_check_fails_when_workflow_is_missing(tmp_path: Path):
     setup_policy_repo(
         tmp_path,
-        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  harness:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/harness.sh\n  agents-policy:\n    runs-on: ubuntu-latest\n",
+        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  secret-scan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/secret-check.sh --patterns-only\n  harness:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/harness.sh\n  agents-policy:\n    runs-on: ubuntu-latest\n",
     )
     (tmp_path / ".github" / "workflows" / "tests.yml").unlink()
 
@@ -294,7 +308,7 @@ def test_policy_check_fails_when_workflow_is_missing(tmp_path: Path):
 def test_policy_check_fails_when_harness_job_is_missing(tmp_path: Path):
     setup_policy_repo(
         tmp_path,
-        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  agents-policy:\n    runs-on: ubuntu-latest\n",
+        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  secret-scan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/secret-check.sh --patterns-only\n  agents-policy:\n    runs-on: ubuntu-latest\n",
     )
 
     result = subprocess.run(
@@ -311,7 +325,7 @@ def test_policy_check_fails_when_harness_job_is_missing(tmp_path: Path):
 def test_policy_check_fails_when_pr_template_lacks_required_section(tmp_path: Path):
     setup_policy_repo(
         tmp_path,
-        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  harness:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/harness.sh\n  agents-policy:\n    runs-on: ubuntu-latest\n",
+        "name: tests\non:\n  push:\n  pull_request:\njobs:\n  tests:\n    runs-on: ubuntu-latest\n  secret-scan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/secret-check.sh --patterns-only\n  harness:\n    runs-on: ubuntu-latest\n    steps:\n      - run: bash scripts/harness.sh\n  agents-policy:\n    runs-on: ubuntu-latest\n",
     )
     write_file(
         tmp_path / "docs" / "pr-template.md",
