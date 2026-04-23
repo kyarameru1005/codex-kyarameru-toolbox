@@ -49,9 +49,10 @@ fi
 
 run_step "SMOKE" "$PYTHON_BIN scripts/install.py install --dry-run"
 run_step "SMOKE" "$PYTHON_BIN scripts/install.py status"
+run_step "SECRETS" "bash scripts/secret-check.sh"
 
 if [[ $QUICK_MODE -eq 1 ]]; then
-  echo "[DONE] quick mode completed (SMOKE only)"
+  echo "[DONE] quick mode completed (SMOKE + SECRETS)"
   exit 0
 fi
 

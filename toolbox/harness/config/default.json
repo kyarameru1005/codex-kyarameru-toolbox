@@ -12,10 +12,12 @@
   "quality_gates": {
     "quick": [
       "policy",
+      "secrets",
       "quick"
     ],
     "full": [
       "policy",
+      "secrets",
       "quick",
       "full"
     ]
