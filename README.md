@@ -38,6 +38,7 @@ python3 scripts/install.py uninstall [--dry-run]
 - `toolbox/skills/skill-validation-worker/`（`SKILL.md`, `scripts/check-skill.sh`）
 - `toolbox/skills/ci-failure-triage-worker/`（`SKILL.md`, `scripts/triage-pr-ci.sh`）
 - `toolbox/skills/pr-quality-gate-worker/`（`SKILL.md`, `scripts/check-pr-quality.sh`）
+- `toolbox/skills/harness-report-writer/`（`SKILL.md`, `scripts/write-report.sh`, `references/report-template.md`）
 - `toolbox/hooks/preflight.sh`
 - `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
@@ -46,6 +47,7 @@ python3 scripts/install.py uninstall [--dry-run]
 AGENTS の管理方針:
 - リポジトリ運用ルールの正本は `AGENTS.md`（プロジェクト用）
 - 配備用グローバルルールの正本は `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
+- 補助ルールは `docs/repository-rules.md` を参照
 
 ## タスク台帳運用
 
@@ -95,6 +97,32 @@ policy チェックのみを単体実行する場合:
 bash scripts/policy-check.sh
 ```
 
+## ハーネス進捗レポート
+
+ハーネス構築の作業ログは `docs/harness-reports/` に定期記録します。
+
+```bash
+bash toolbox/skills/harness-report-writer/scripts/write-report.sh \
+  --title harness-weekly
+```
+
+- 日付・時刻は自動入力
+- 他項目は1つずつプロンプトで入力
+- 出力先: `docs/harness-reports/<timestamp>-<title>.md`
+- 生成セクション: `結論` / `実施内容` / `課題` / `次アクション` / `検証`
+- `--title` は kebab-case を使用（`_` は不可）
+
+作成後に「レポート生成 + 検証 + 適用」まで一括で行う場合:
+
+```bash
+bash scripts/report-validate-apply.sh \
+  --title harness-daily \
+  --quick
+```
+
+- `--quick`: `pytest` とフルハーネスを省略し、`policy-check` と `harness --quick` で高速確認
+- 省略時: `pytest` と `bash scripts/harness.sh` を実行してから `python3 scripts/install.py update` で適用
+
 PR作成時はテンプレートを使う:
 
 ```bash
@@ -134,11 +162,44 @@ bash scripts/finish-pr.sh \
 
 ## CI
 
-GitHub Actions で `push` / `pull_request` 時にテストを自動実行します。
+GitHub Actions で `push` / `pull_request` 時に以下を自動実行します。
 
 - ワークフロー: `.github/workflows/tests.yml`
-- ジョブ名: `tests`
-- 実行コマンド: `python3 -m pytest -q`
+- ジョブ: `tests` / `harness` / `agents-policy`
+- `tests`: `python3 -m pytest -q`
+- `harness`: `bash scripts/harness.sh`
+- `agents-policy`: `bash toolbox/skills/agents-md-writer/scripts/check_agents_md.sh AGENTS.md` など
+
+### Discord 通知（Webhook）
+
+MCP を使わず、Discord Webhook で通知します。
+
+1. Discord の通知先チャンネルで Webhook URL を発行する。
+2. GitHub リポジトリの `Settings -> Secrets and variables -> Actions` に
+   `DISCORD_WEBHOOK_URL` を登録する。
+3. `.github/workflows/discord-notify.yml` により、`tests` ワークフロー完了時に通知する。
+4. `.github/workflows/pr-discord-notify.yml` により、PR作成時にPRリンクを通知する。
+
+PRリンク通知のトリガー:
+- `pull_request.opened`
+- `pull_request.reopened`
+- `pull_request.ready_for_review`
+
+ローカルから手動通知する場合:
+
+```bash
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+bash scripts/notify-discord.sh \
+  --status progress \
+  --summary "ローカル作業を開始" \
+  --link "https://github.com/<owner>/<repo>/pull/<number>"
+```
+
+送信テスト（Webhook未設定でも可）:
+
+```bash
+bash scripts/notify-discord.sh --status info --summary "dry run test" --dry-run
+```
 
 ### Discord 通知（Webhook）
 
