@@ -1,0 +1,6 @@
+{
+  "mode": "dry-run",
+  "input_dir": "toolbox/harness/input",
+  "output_dir": "toolbox/harness/output",
+  "log_level": "info"
+}
