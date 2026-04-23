@@ -46,7 +46,7 @@ build_target_list() {
         ;;
     esac
     printf '%s\0' "$f"
-  done < <(git ls-files -z)
+  done < <(git ls-files -z --cached --others --exclude-standard)
 }
 
 echo "[CHECK] build target file list"
