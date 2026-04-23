@@ -18,8 +18,8 @@ python3 scripts/install.py status
 ## コマンド
 
 ```bash
-python3 scripts/install.py install [--mode copy|link] [--backup-mode ask|auto|never] [--dry-run]
-python3 scripts/install.py update [--mode copy|link] [--backup-mode ask|auto|never] [--dry-run]
+python3 scripts/install.py install [--mode copy|link] [--dry-run]
+python3 scripts/install.py update [--mode copy|link] [--dry-run]
 python3 scripts/install.py status
 python3 scripts/install.py uninstall [--dry-run]
 ```
@@ -28,39 +28,6 @@ python3 scripts/install.py uninstall [--dry-run]
 - `update`: `install` を再実行し、旧マニフェストにのみ存在する古い配備物をクリーンアップ
 - `status`: 配備状態を表示
 - `uninstall`: マニフェストに記録された管理対象のみ削除
-- `backup-mode`: `AGENTS.md` 更新時のバックアップ方針を指定（既定: `ask`）
-  - `ask`: バックアップを取るか確認
-  - `auto`: 常にバックアップを作成
-  - `never`: バックアップを作成しない
-
-使用例:
-
-```bash
-# 既定（確認あり）
-python3 scripts/install.py update
-
-# 常にバックアップを作成
-python3 scripts/install.py update --backup-mode auto
-
-# バックアップなしで更新
-python3 scripts/install.py update --backup-mode never
-```
-
-## `~/.codex` をデフォルト状態へ戻す（比較用）
-
-ハーネス適用状態とデフォルト状態を比較したい場合は、以下を実行します。  
-このスクリプトは現在の `~/.codex` をこのリポジトリ直下へバックアップしてから、復元元スナップショットで上書きします。
-
-```bash
-bash scripts/restore-codex-default.sh --dry-run
-bash scripts/restore-codex-default.sh
-```
-
-主なオプション:
-- `--source <dir>`: 復元元ディレクトリ（既定: `codex-initial-state`）
-- `--target <dir>`: 復元先ディレクトリ（既定: `~/.codex`）
-- `--backup-base-dir <dir>`: バックアップ保存先（既定: このリポジトリ直下）
-- `--yes`: 確認プロンプトを省略
 
 ## 初期同梱内容
 
@@ -71,6 +38,7 @@ bash scripts/restore-codex-default.sh
 - `toolbox/skills/skill-validation-worker/`（`SKILL.md`, `scripts/check-skill.sh`）
 - `toolbox/skills/ci-failure-triage-worker/`（`SKILL.md`, `scripts/triage-pr-ci.sh`）
 - `toolbox/skills/pr-quality-gate-worker/`（`SKILL.md`, `scripts/check-pr-quality.sh`）
+- `toolbox/skills/harness-report-writer/`（`SKILL.md`, `scripts/write-report.sh`, `references/report-template.md`）
 - `toolbox/hooks/preflight.sh`
 - `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
@@ -79,14 +47,12 @@ bash scripts/restore-codex-default.sh
 AGENTS の管理方針:
 - リポジトリ運用ルールの正本は `AGENTS.md`（プロジェクト用）
 - 配備用グローバルルールの正本は `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
+- 補助ルールは `docs/repository-rules.md` を参照
 
 ## タスク台帳運用
 
 - 着手前・完了時に `docs/task-list.md` を更新する。
 - 新規タスク追加・完了・優先度変更時は `~/.codex/repo-task-index.md` も同一作業内で同期する。
-- 作業開始時は対象タスクを `(doing)` に更新し、完了時は `- [x]` へ変更する。
-- 実装・調査・ドキュメント更新だけの作業でも、着手前と完了時の両方で台帳を確認する。
-- 週次の定期見直し時は、未着手タスクの優先度と不要化したタスクの有無を確認する。
 
 ## スキル作成時の検証
 
@@ -131,6 +97,32 @@ policy チェックのみを単体実行する場合:
 bash scripts/policy-check.sh
 ```
 
+## ハーネス進捗レポート
+
+ハーネス構築の作業ログは `docs/harness-reports/` に定期記録します。
+
+```bash
+bash toolbox/skills/harness-report-writer/scripts/write-report.sh \
+  --title harness-weekly
+```
+
+- 日付・時刻は自動入力
+- 他項目は1つずつプロンプトで入力
+- 出力先: `docs/harness-reports/<timestamp>-<title>.md`
+- 生成セクション: `結論` / `実施内容` / `課題` / `次アクション` / `検証`
+- `--title` は kebab-case を使用（`_` は不可）
+
+作成後に「レポート生成 + 検証 + 適用」まで一括で行う場合:
+
+```bash
+bash scripts/report-validate-apply.sh \
+  --title harness-daily \
+  --quick
+```
+
+- `--quick`: `pytest` とフルハーネスを省略し、`policy-check` と `harness --quick` で高速確認
+- 省略時: `pytest` と `bash scripts/harness.sh` を実行してから `python3 scripts/install.py update` で適用
+
 PR作成時はテンプレートを使う:
 
 ```bash
@@ -170,11 +162,44 @@ bash scripts/finish-pr.sh \
 
 ## CI
 
-GitHub Actions で `push` / `pull_request` 時にテストを自動実行します。
+GitHub Actions で `push` / `pull_request` 時に以下を自動実行します。
 
 - ワークフロー: `.github/workflows/tests.yml`
-- ジョブ名: `tests`
-- 実行コマンド: `python3 -m pytest -q`
+- ジョブ: `tests` / `harness` / `agents-policy`
+- `tests`: `python3 -m pytest -q`
+- `harness`: `bash scripts/harness.sh`
+- `agents-policy`: `bash toolbox/skills/agents-md-writer/scripts/check_agents_md.sh AGENTS.md` など
+
+### Discord 通知（Webhook）
+
+MCP を使わず、Discord Webhook で通知します。
+
+1. Discord の通知先チャンネルで Webhook URL を発行する。
+2. GitHub リポジトリの `Settings -> Secrets and variables -> Actions` に
+   `DISCORD_WEBHOOK_URL` を登録する。
+3. `.github/workflows/discord-notify.yml` により、`tests` ワークフロー完了時に通知する。
+4. `.github/workflows/pr-discord-notify.yml` により、PR作成時にPRリンクを通知する。
+
+PRリンク通知のトリガー:
+- `pull_request.opened`
+- `pull_request.reopened`
+- `pull_request.ready_for_review`
+
+ローカルから手動通知する場合:
+
+```bash
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+bash scripts/notify-discord.sh \
+  --status progress \
+  --summary "ローカル作業を開始" \
+  --link "https://github.com/<owner>/<repo>/pull/<number>"
+```
+
+送信テスト（Webhook未設定でも可）:
+
+```bash
+bash scripts/notify-discord.sh --status info --summary "dry run test" --dry-run
+```
 
 ## main ブランチ保護
 
