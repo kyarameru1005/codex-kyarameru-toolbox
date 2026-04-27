@@ -86,6 +86,25 @@ def backup_existing_agents(path: Path, dry_run: bool) -> Path | None:
     return backup_path
 
 
+def should_backup_agents(path: Path, backup_mode: str) -> bool:
+    if backup_mode == "never":
+        return False
+    if backup_mode == "auto":
+        return True
+
+    if not sys.stdin.isatty():
+        print(f"[WARN] backup confirmation skipped (non-interactive): {path}")
+        return False
+
+    while True:
+        answer = input(f"[CONFIRM] backup existing {path}? [y/N]: ").strip().lower()
+        if answer in {"y", "yes"}:
+            return True
+        if answer in {"", "n", "no"}:
+            return False
+        print("[WARN] please answer y or n")
+
+
 def read_manifest(path: Path) -> dict[str, object]:
     if not path.exists():
         return {"app": APP_NAME, "paths": []}
@@ -147,7 +166,7 @@ def cleanup_stale_managed_paths(desired_paths: set[Path], dry_run: bool, home: P
         print(f"[INFO] removed stale managed: {path}")
 
 
-def copy_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str:
+def copy_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool, backup_mode: str) -> str:
     src = entry.source
     dst = entry.target
 
@@ -157,7 +176,8 @@ def copy_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str
 
     backup_path: Path | None = None
     if agents_target and (dst.exists() or dst.is_symlink()):
-        backup_path = backup_existing_agents(dst, dry_run)
+        if should_backup_agents(dst, backup_mode):
+            backup_path = backup_existing_agents(dst, dry_run)
 
     if dry_run:
         if backup_path is not None:
@@ -183,7 +203,7 @@ def copy_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str
     return f"[INFO] copied: {dst}"
 
 
-def link_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str:
+def link_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool, backup_mode: str) -> str:
     src = entry.source
     dst = entry.target
 
@@ -193,7 +213,8 @@ def link_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str
 
     backup_path: Path | None = None
     if agents_target and (dst.exists() or dst.is_symlink()):
-        backup_path = backup_existing_agents(dst, dry_run)
+        if should_backup_agents(dst, backup_mode):
+            backup_path = backup_existing_agents(dst, dry_run)
 
     if dry_run:
         if backup_path is not None:
@@ -221,6 +242,7 @@ def link_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool) -> str
 def install(
     mode: str,
     dry_run: bool,
+    backup_mode: str = "auto",
     root: Path | None = None,
     home: Path | None = None,
     cleanup_stale: bool = False,
@@ -240,9 +262,9 @@ def install(
 
     for entry in entries:
         if mode == "copy":
-            msg = copy_entry(entry, managed_set, dry_run)
+            msg = copy_entry(entry, managed_set, dry_run, backup_mode)
         else:
-            msg = link_entry(entry, managed_set, dry_run)
+            msg = link_entry(entry, managed_set, dry_run, backup_mode)
         print(msg)
 
         if msg.startswith("[INFO]") or msg.startswith("[DRY-RUN]"):
@@ -317,10 +339,12 @@ def build_parser() -> argparse.ArgumentParser:
     install_cmd = sub.add_parser("install", help="Install toolbox assets")
     install_cmd.add_argument("--mode", choices=["copy", "link"], default="copy")
     install_cmd.add_argument("--dry-run", action="store_true")
+    install_cmd.add_argument("--backup-mode", choices=["auto", "ask", "never"], default="ask")
 
     update_cmd = sub.add_parser("update", help="Re-run install")
     update_cmd.add_argument("--mode", choices=["copy", "link"], default="copy")
     update_cmd.add_argument("--dry-run", action="store_true")
+    update_cmd.add_argument("--backup-mode", choices=["auto", "ask", "never"], default="ask")
 
     sub.add_parser("status", help="Show install status")
 
@@ -334,9 +358,9 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
 
     if args.command == "install":
-        return install(mode=args.mode, dry_run=args.dry_run, cleanup_stale=False)
+        return install(mode=args.mode, dry_run=args.dry_run, backup_mode=args.backup_mode, cleanup_stale=False)
     if args.command == "update":
-        return install(mode=args.mode, dry_run=args.dry_run, cleanup_stale=True)
+        return install(mode=args.mode, dry_run=args.dry_run, backup_mode=args.backup_mode, cleanup_stale=True)
     if args.command == "status":
         return status()
     if args.command == "uninstall":

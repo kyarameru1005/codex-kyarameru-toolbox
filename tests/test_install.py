@@ -236,21 +236,21 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
         "#!/usr/bin/env bash\nset -euo pipefail\necho \"mock\"\n",
     )
     write_file(
-        tmp_path / "scripts" / "secret-check.sh",
-        "#!/usr/bin/env bash\nset -euo pipefail\necho \"[DONE] secret checks passed\"\n",
-    )
-    write_file(
-        tmp_path / "scripts" / "gitleaks.toml",
-        "title = \"test\"\n",
-    )
-    write_file(
         tmp_path / "scripts" / "harness.sh",
         "#!/usr/bin/env bash\nset -euo pipefail\nbash scripts/secret-check.sh\n",
     )
+    write_file(
+        tmp_path / "scripts" / "secret-check.sh",
+        "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock secret check\"\n",
+    )
+    write_file(
+        tmp_path / "scripts" / "gitleaks.toml",
+        "[extend]\nuseDefault = true\n",
+    )
     write_file(tmp_path / "scripts" / "policy-check.sh", policy_script.read_text(encoding="utf-8"))
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "create-pr.sh")], check=True)
-    subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "secret-check.sh")], check=True)
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "harness.sh")], check=True)
+    subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "secret-check.sh")], check=True)
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "policy-check.sh")], check=True)
     subprocess.run(
         ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh")],
@@ -267,6 +267,14 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
     subprocess.run(
         ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "pr-quality-gate-worker" / "scripts" / "check-pr-quality.sh")],
         check=True,
+    )
+    write_file(
+        tmp_path / "toolbox" / "skills" / "harness-report-writer" / "SKILL.md",
+        "# harness-report-writer\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
+    )
+    write_file(
+        tmp_path / "toolbox" / "skills" / "orchestrator-worker" / "SKILL.md",
+        "# orchestrator-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
     )
 
 

@@ -1,46 +1,60 @@
-# mcp-worker
+---
+name: mcp-worker
+description: Delegates MCP-required tasks to a separate worker Claude process and returns JSON results. Use when external service access (GitHub, Slack, databases) is needed, when MCP tools are required, or when the main session has no MCP available.
+allowed-tools: Bash
+user-invocable: true
+---
 
-目的: 外部サービス接続が必要な作業を別ワーカーで実行し、メイン文脈を軽量化する。
+# MCP Worker
 
-## 推奨トリガー
+Runs a separate Claude process with MCP tools enabled, returning structured JSON results.
 
-- GitHub / Slack / 外部DB 連携が必要なとき
-- MCP ツール呼び出しが必要なとき
+## Quick Start
 
-## 入力テンプレート
-
-- 目的: 何を取得/更新したいか
-- 接続先: GitHub / Slack / Google系 / DB など
-- 必須出力: 最終的に欲しい形式（JSON, 箇条書き, パッチ案）
-- 制約: 期限、読み取り専用可否、更新許可範囲
-
-## 実行手順
-
-1. 取得対象と更新対象を明確に分離する。
-2. 先に読み取りで現状確認し、更新操作は最後にまとめる。
-3. 重要データは根拠（ID、URL、timestamp）付きで返す。
-4. 失敗時は再試行条件と手動フォールバックを提示する。
-
-## 出力
-
-- 実行サマリ（目的/実施操作/成否）
-- 取得データ（ID・URL・主要フィールド）
-- 変更結果（更新系操作を行った場合）
-- 次のアクション（main worker が続行する具体手順）
-
-## 出力例
-
-```md
-## 実行サマリ
-- 目的: PR #42 の未解決レビュー抽出
-- 実施: コメント取得 + thread 状態確認
-- 成否: 成功
-
-## 取得データ
-- PR: https://github.com/org/repo/pull/42
-- 未解決 thread: 3件（comment_id: 123, 456, 789）
-
-## 次のアクション
-1. comment_id 123/456 をコード修正対象として反映
-2. 789 は仕様確認質問を起票
+```bash
+bash ~/.claude/skills/mcp-worker/scripts/run_worker.sh \
+  "req_$(date +%Y%m%d-%H%M%S)" \
+  "<mcp_name>" \
+  "<task>"
 ```
+
+## Arguments
+
+| Arg | Description | Example |
+|-----|-------------|---------|
+| request_id | Unique identifier | `req_20241231-120000` |
+| mcp_names | MCP config names (space-separated) | `github` or `github slack` |
+| task | Task for the worker | `Summarize the README` |
+
+## Output Format
+
+```json
+{
+  "request_id": "req_xxx",
+  "status": "success",
+  "summary": "Brief summary",
+  "answer_markdown": "Detailed answer in Markdown",
+  "sources": ["source1", "source2"]
+}
+```
+
+## Adding MCP Configs
+
+Create `~/.claude/skills/mcp-worker/mcp-configs/<name>.json`:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" }
+    }
+  }
+}
+```
+
+## Additional Resources
+
+- [REFERENCE.md](REFERENCE.md) - Detailed API and configuration
+- [schema.worker-result.json](schema.worker-result.json) - Output JSON schema

@@ -19,16 +19,6 @@ if [[ ! -f "$SKILL_FILE" ]]; then
   exit 1
 fi
 
-if ! awk 'NR==1{exit ($0=="---")?0:1}' "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md must start with frontmatter delimiter: ---"
-  exit 1
-fi
-
-if ! awk 'NR>1 && $0=="---"{found=1; exit 0} END{exit found?0:1}' "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md frontmatter closing delimiter not found: ---"
-  exit 1
-fi
-
 has_pattern() {
   local pattern="$1"
   local file="$2"
@@ -59,14 +49,26 @@ if [[ "$SKILL_DIR_NAME" =~ _ ]]; then
   exit 1
 fi
 
-if ! has_pattern "^name:[[:space:]]*$SKILL_DIR_NAME$" "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md frontmatter name must match directory name: $SKILL_DIR_NAME"
-  exit 1
-fi
-
-if ! has_pattern "^description:[[:space:]]*.+$" "$SKILL_FILE"; then
-  echo "[ERROR] SKILL.md frontmatter description is required"
-  exit 1
+# Validate frontmatter `name` if present.
+if has_pattern '^---$' "$SKILL_FILE"; then
+  fm_name="$(
+    awk '
+      BEGIN { in_fm=0; seen=0 }
+      /^---[[:space:]]*$/ {
+        if (seen == 0) { in_fm=1; seen=1; next }
+        if (in_fm == 1) { in_fm=0; exit }
+      }
+      in_fm == 1 && $0 ~ /^name:[[:space:]]*/ {
+        sub(/^name:[[:space:]]*/, "", $0)
+        print $0
+        exit
+      }
+    ' "$SKILL_FILE"
+  )"
+  if [[ -n "$fm_name" ]] && [[ "$fm_name" != "$SKILL_DIR_NAME" ]]; then
+    echo "[ERROR] frontmatter name must match directory name: $fm_name != $SKILL_DIR_NAME"
+    exit 1
+  fi
 fi
 
 if [[ -d "$TARGET_DIR/scripts" ]]; then

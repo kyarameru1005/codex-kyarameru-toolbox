@@ -13,7 +13,7 @@
 ## タスク一覧
 
 - [x] `T-001` [high] リポジトリ横断台帳 `~/.codex/repo-task-index.md` へ本リポジトリを登録（`docs/task-list.md` へのリンクを記載）
-- [ ] `T-002` [medium] `docs/task-list.md` の定期更新ルールを README に追記（運用漏れ防止）
+- [x] `T-002` [medium] `docs/task-list.md` の定期更新ルールを README に追記（運用漏れ防止）
 - [x] `T-003` [high] `update` 実行時に旧配備物（stale managed path）をクリーンアップする
 - [x] `T-004` [high] README の同梱内容を実装実態に合わせて修正する
 - [x] `T-005` [high] `plan-worker` / `mcp-worker` の SKILL 定義を具体化する
@@ -29,8 +29,11 @@
 - [x] `T-015` [high] `pr-quality-gate-worker` を追加する
 - [x] `T-016` [high] 新規スキルの `SKILL.md` を雛形（frontmatter）準拠に修正する
 - [x] `T-017` [medium] `check-skill.sh` に frontmatter 必須チェックを追加する
-- [x] `T-018` [medium] Discord Webhook 通知（MCPなし）を追加する（`scripts/notify-discord.sh` と `.github/workflows/discord-notify.yml`）
-- [x] `T-019` [medium] PR作成時にPRリンクをDiscord通知するワークフローを追加する（`.github/workflows/pr-discord-notify.yml`）
+- [x] `T-018` [high] ロングラン運用向けの `orchestrator-worker` を追加し、状態ファイルベースで再開可能な実行方式を設計する
+- [ ] `T-019` [high] 文脈圧縮用の `context-reducer-worker` とトークン予算運用ルールを追加し、README に利用方針を追記する
+- [x] `T-020` [low] `toolbox/AGENTS.md` から不要な「適用手順」セクションを削除する
+- [x] `T-021` [medium] 比較検証用に `~/.codex` をデフォルト状態へ戻すスクリプトを追加し、README に手順を追記する
+- [x] `T-022` [medium] 公式ドキュメントに基づく最小初期状態 `codex-initial-state` を追加し、復元スクリプト既定値を切り替える
 
 ## メモ
 
@@ -40,5 +43,10 @@
 - 2026-04-03: 標準作業フローの実行スクリプト（`start-branch.sh`, `finish-pr.sh`）を追加。
 - 2026-04-03: `ci-failure-triage-worker` と `pr-quality-gate-worker` を追加。
 - 2026-04-03: スキル雛形崩れの修正（frontmatter統一 + 検証強化）を実施。
-- 2026-04-03: Discord Webhook 通知スクリプトと GitHub Actions 通知ワークフローを追加。
-- 2026-04-03: PR作成時にPRリンクを送る `pr-discord-notify.yml` を追加。
+- 2026-04-10: Discord で作業進捗を扱う機能は時期尚早のため、通知スクリプトと関連ワークフローを削除。
+- 2026-04-14: ロングラン orchestration と token 削減の検討を新規タスク `T-018` `T-019` として追加。
+- 2026-04-14: `T-002` として README に台帳の定期更新ルールを追記。
+- 2026-04-15: `T-020` として `toolbox/AGENTS.md` の不要な適用手順セクションを削除。
+- 2026-04-22: `T-021` として `scripts/restore-codex-default.sh` を追加し、README に比較検証用の復元手順を追記。
+- 2026-04-22: `T-022` として `codex-initial-state`（最小構成）を追加し、`restore-codex-default.sh` の既定復元元を切り替え。
+- 2026-04-24: `T-018` として `orchestrator-worker`（state ベース再開・再試行）を追加し、README/仕様へ運用手順を追記。
