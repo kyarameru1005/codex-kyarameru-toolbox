@@ -6,6 +6,7 @@ PR_TITLE=""
 BASE_BRANCH="main"
 DRAFT_MODE=0
 SKIP_VERIFY=0
+SKIP_BASE_SYNC=0
 FILES=()
 
 usage() {
@@ -15,7 +16,7 @@ Usage:
     --commit "<commit message>" \
     --pr "<pull request title>" \
     --file <path> [--file <path> ...] \
-    [--base <branch>] [--draft] [--skip-verify]
+    [--base <branch>] [--draft] [--skip-verify] [--skip-base-sync]
 
 Notes:
   - main ブランチ上では実行できません
@@ -55,6 +56,10 @@ while [[ $# -gt 0 ]]; do
       SKIP_VERIFY=1
       shift
       ;;
+    --skip-base-sync)
+      SKIP_BASE_SYNC=1
+      shift
+      ;;
     *)
       echo "[ERROR] unknown option: $1"
       usage
@@ -84,6 +89,21 @@ CURRENT_BRANCH="$(git branch --show-current)"
 if [[ "$CURRENT_BRANCH" == "main" ]]; then
   echo "[ERROR] current branch is main. create/switch to a work branch first"
   exit 1
+fi
+
+echo "[INFO] repository health check"
+bash scripts/repo-health-check.sh --strict
+
+if [[ $SKIP_BASE_SYNC -eq 0 ]]; then
+  echo "[INFO] check branch is up-to-date with origin/$BASE_BRANCH"
+  git fetch origin "$BASE_BRANCH"
+  if ! git merge-base --is-ancestor "origin/$BASE_BRANCH" HEAD; then
+    echo "[ERROR] current branch is behind origin/$BASE_BRANCH"
+    echo "[ERROR] rebase first: git rebase origin/$BASE_BRANCH"
+    exit 1
+  fi
+else
+  echo "[WARN] skip base sync check by --skip-base-sync"
 fi
 
 echo "[INFO] precheck"

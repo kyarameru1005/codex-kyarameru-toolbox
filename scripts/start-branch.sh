@@ -3,9 +3,10 @@ set -euo pipefail
 
 BASE_BRANCH="main"
 ALLOW_DIRTY=0
+SKIP_BASE_SYNC=0
 
 usage() {
-  echo "Usage: bash scripts/start-branch.sh <kind> <topic> [--base <branch>] [--allow-dirty]"
+  echo "Usage: bash scripts/start-branch.sh <kind> <topic> [--base <branch>] [--allow-dirty] [--skip-base-sync]"
   echo "  kind: feat|fix|chore|docs|refactor|test"
   echo "  topic: kebab-case を推奨（例: skill-validation-flow）"
 }
@@ -27,6 +28,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --allow-dirty)
       ALLOW_DIRTY=1
+      shift
+      ;;
+    --skip-base-sync)
+      SKIP_BASE_SYNC=1
       shift
       ;;
     *)
@@ -56,6 +61,9 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 1
 fi
 
+echo "[INFO] repository health check"
+bash scripts/repo-health-check.sh --strict
+
 if [[ $ALLOW_DIRTY -eq 0 ]] && [[ -n "$(git status --porcelain)" ]]; then
   echo "[ERROR] working tree is not clean. commit/stash first or use --allow-dirty"
   exit 1
@@ -65,6 +73,14 @@ TARGET_BRANCH="${KIND}/${TOPIC}"
 
 echo "[INFO] switch to base branch: $BASE_BRANCH"
 git switch "$BASE_BRANCH"
+
+if [[ $SKIP_BASE_SYNC -eq 0 ]]; then
+  echo "[INFO] sync base branch with origin/$BASE_BRANCH"
+  git fetch origin "$BASE_BRANCH"
+  git merge --ff-only "origin/$BASE_BRANCH"
+else
+  echo "[WARN] skip base sync by --skip-base-sync"
+fi
 
 if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
   echo "[INFO] branch already exists. switching: $TARGET_BRANCH"

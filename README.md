@@ -153,7 +153,6 @@ bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
 - 実行時に `running -> passed/failed` を更新
 - 失敗時は `queued(retries=n)` へ戻して再試行
 - 同じ `task-id` を再実行すると state から再開（`passed` は即終了）
-
 PR作成時はテンプレートを使う:
 
 ```bash
@@ -174,6 +173,9 @@ bash scripts/create-pr.sh "<title>"
 bash scripts/start-branch.sh fix <topic>
 ```
 
+- 既定で `origin/main` へ fast-forward 同期してからブランチ作成します。
+- 同期をスキップする場合は `--skip-base-sync` を指定します。
+
 2. 実装・修正を行う。
 3. 台帳を更新する（着手前/完了時に `docs/task-list.md`、必要なら `~/.codex/repo-task-index.md`）。
 4. 検証・commit・push・PR作成までを実行する。
@@ -190,14 +192,19 @@ bash scripts/finish-pr.sh \
 - `--draft`: Draft PRで作成
 - `--base <branch>`: PRのbaseブランチを指定（既定: `main`）
 - `--skip-verify`: `pytest` と `policy-check` をスキップ（通常は非推奨）
+- `--skip-base-sync`: `origin/<base>` への追従チェックをスキップ（通常は非推奨）
+
+補足:
+- `start-branch` / `finish-pr` は実行前に `scripts/repo-health-check.sh --strict` を実行します。
 
 ## CI
 
 GitHub Actions で `push` / `pull_request` 時に以下を自動実行します。
 
 - ワークフロー: `.github/workflows/tests.yml`
-- ジョブ: `tests` / `harness` / `agents-policy`
+- ジョブ: `tests` / `secret-scan` / `harness` / `agents-policy`
 - `tests`: `python3 -m pytest -q`
+- `secret-scan`: `gitleaks + scripts/secret-check.sh --patterns-only`
 - `harness`: `bash scripts/harness.sh`
 - `agents-policy`: `bash toolbox/skills/agents-md-writer/scripts/check_agents_md.sh AGENTS.md` など
 
