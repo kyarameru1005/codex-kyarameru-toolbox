@@ -49,6 +49,28 @@ if [[ "$SKILL_DIR_NAME" =~ _ ]]; then
   exit 1
 fi
 
+# Validate frontmatter `name` if present.
+if has_pattern '^---$' "$SKILL_FILE"; then
+  fm_name="$(
+    awk '
+      BEGIN { in_fm=0; seen=0 }
+      /^---[[:space:]]*$/ {
+        if (seen == 0) { in_fm=1; seen=1; next }
+        if (in_fm == 1) { in_fm=0; exit }
+      }
+      in_fm == 1 && $0 ~ /^name:[[:space:]]*/ {
+        sub(/^name:[[:space:]]*/, "", $0)
+        print $0
+        exit
+      }
+    ' "$SKILL_FILE"
+  )"
+  if [[ -n "$fm_name" ]] && [[ "$fm_name" != "$SKILL_DIR_NAME" ]]; then
+    echo "[ERROR] frontmatter name must match directory name: $fm_name != $SKILL_DIR_NAME"
+    exit 1
+  fi
+fi
+
 if [[ -d "$TARGET_DIR/scripts" ]]; then
   while IFS= read -r -d '' script; do
     if [[ "$(basename "$script")" =~ _ ]]; then

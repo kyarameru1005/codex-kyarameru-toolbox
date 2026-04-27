@@ -242,7 +242,7 @@ def link_entry(entry: InstallEntry, managed_set: set[str], dry_run: bool, backup
 def install(
     mode: str,
     dry_run: bool,
-    backup_mode: str,
+    backup_mode: str = "auto",
     root: Path | None = None,
     home: Path | None = None,
     cleanup_stale: bool = False,
