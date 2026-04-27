@@ -39,6 +39,7 @@ python3 scripts/install.py uninstall [--dry-run]
 - `toolbox/skills/ci-failure-triage-worker/`（`SKILL.md`, `scripts/triage-pr-ci.sh`）
 - `toolbox/skills/pr-quality-gate-worker/`（`SKILL.md`, `scripts/check-pr-quality.sh`）
 - `toolbox/skills/harness-report-writer/`（`SKILL.md`, `scripts/write-report.sh`, `references/report-template.md`）
+- `toolbox/skills/orchestrator-worker/`（`SKILL.md`, `scripts/run-task.sh`）
 - `toolbox/hooks/preflight.sh`
 - `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
@@ -134,6 +135,24 @@ bash scripts/report-validate-apply.sh \
 - 反映したい場合のみ `--apply` を指定する
 - `--apply` 指定時: 最後に `python3 scripts/install.py update` を実行
 - 実行メトリクスは `docs/harness-reports/metrics/<YYYY-MM>.jsonl` に保存
+
+## Orchestrator（task-state 再開実行）
+
+`orchestrator-worker` は `toolbox/harness/state/tasks.json` を使い、再開可能な実行を行います。
+
+```bash
+bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
+  --task-id T-018 \
+  --owner harness-worker \
+  --command "bash scripts/report-validate-apply.sh --title harness-t018 --quick" \
+  --max-retries 1 \
+  --retry-backoff-sec 5
+```
+
+- 初回は `upsert(queued)` を作成
+- 実行時に `running -> passed/failed` を更新
+- 失敗時は `queued(retries=n)` へ戻して再試行
+- 同じ `task-id` を再実行すると state から再開（`passed` は即終了）
 
 PR作成時はテンプレートを使う:
 

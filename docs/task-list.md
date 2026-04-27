@@ -29,7 +29,7 @@
 - [x] `T-015` [high] `pr-quality-gate-worker` を追加する
 - [x] `T-016` [high] 新規スキルの `SKILL.md` を雛形（frontmatter）準拠に修正する
 - [x] `T-017` [medium] `check-skill.sh` に frontmatter 必須チェックを追加する
-- [ ] `T-018` [high] ロングラン運用向けの `orchestrator-worker` を追加し、状態ファイルベースで再開可能な実行方式を設計する
+- [x] `T-018` [high] ロングラン運用向けの `orchestrator-worker` を追加し、状態ファイルベースで再開可能な実行方式を設計する
 - [ ] `T-019` [high] 文脈圧縮用の `context-reducer-worker` とトークン予算運用ルールを追加し、README に利用方針を追記する
 - [x] `T-020` [low] `toolbox/AGENTS.md` から不要な「適用手順」セクションを削除する
 - [x] `T-021` [medium] 比較検証用に `~/.codex` をデフォルト状態へ戻すスクリプトを追加し、README に手順を追記する
@@ -49,3 +49,4 @@
 - 2026-04-15: `T-020` として `toolbox/AGENTS.md` の不要な適用手順セクションを削除。
 - 2026-04-22: `T-021` として `scripts/restore-codex-default.sh` を追加し、README に比較検証用の復元手順を追記。
 - 2026-04-22: `T-022` として `codex-initial-state`（最小構成）を追加し、`restore-codex-default.sh` の既定復元元を切り替え。
+- 2026-04-24: `T-018` として `orchestrator-worker`（state ベース再開・再試行）を追加し、README/仕様へ運用手順を追記。

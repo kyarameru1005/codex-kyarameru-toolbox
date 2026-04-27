@@ -150,3 +150,24 @@ v1では以下を標準とする。
 4. 品質ゲートを通過したら `set-status(passed)` にする。  
 5. 失敗時は `set-status(failed)` にする。  
 6. 再試行時は `upsert(... --retries <n+1>)` 後に `running` へ戻す。  
+
+## 13. v1 参照実装（orchestrator-worker）
+
+- スキル定義: `toolbox/skills/orchestrator-worker/SKILL.md`
+- 実行スクリプト: `toolbox/skills/orchestrator-worker/scripts/run-task.sh`
+
+標準実行例:
+
+```bash
+bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
+  --task-id T-018 \
+  --owner harness-worker \
+  --command "bash scripts/report-validate-apply.sh --title harness-t018 --quick" \
+  --max-retries 1 \
+  --retry-backoff-sec 5
+```
+
+補足:
+
+- `--checkpoint-command` を指定した場合、成功時に `checkpointed` を記録する。
+- 同一 `task-id` が `passed` の場合は再実行せず終了する。
