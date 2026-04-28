@@ -11,9 +11,11 @@ build/
 *.egg-info/
 toolbox/.codex/
 toolbox/.tmp/
+toolbox/cache/
+toolbox/plugins/cache/
 toolbox/log/
 toolbox/sessions/
-toolbox/vendor_imports/skills-curated-cache.json
+toolbox/vendor_imports/
 toolbox/shell_snapshots/
 toolbox/sqlite/
 toolbox/tmp/

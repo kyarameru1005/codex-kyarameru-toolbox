@@ -20,6 +20,23 @@ NEXT_ACTIONS=""
 VERIFY_CMD=""
 VERIFY_RESULT=""
 
+find_repo_root() {
+  local dir
+  dir="$(pwd)"
+
+  while [[ "$dir" != "/" ]]; do
+    if [[ -f "$dir/AGENTS.md" \
+      && -f "$dir/README.md" \
+      && -f "$dir/toolbox/skills/harness-report-writer/SKILL.md" ]]; then
+      printf "%s" "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+
+  return 1
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --title)
@@ -66,6 +83,11 @@ if [[ "$TITLE" =~ [^a-z0-9-] ]]; then
   exit 1
 fi
 
+if ! ROOT_DIR="$(find_repo_root)"; then
+  echo "[ERROR] harness-report-writer must be run inside the kyarameru-tool-box repository"
+  exit 1
+fi
+
 CONCLUSION="$(prompt_field "結論")"
 WORK_DONE="$(prompt_field "実施内容")"
 ISSUES="$(prompt_field "課題")"
@@ -73,7 +95,6 @@ NEXT_ACTIONS="$(prompt_field "次アクション")"
 VERIFY_CMD="$(prompt_field "検証コマンド")"
 VERIFY_RESULT="$(prompt_field "検証結果")"
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 OUT_DIR="$ROOT_DIR/docs/harness-reports"
 OUT_FILE="$OUT_DIR/${STAMP}-${TITLE}.md"
 

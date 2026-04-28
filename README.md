@@ -1,6 +1,8 @@
 # kyarameru-tool-box
 
-Codex 専用の個人ツールボックスです。`~/.codex` へスキルとフックを配備します。
+Codex 専用の個人ツールボックスです。`~/.codex` へスキル、エージェント、フック、プロンプトを配備します。
+
+このリポジトリは、生成AIコーディングエージェント活用における開発ハーネス構築を半年間の研究テーマとして進めるための成果物でもあります。研究計画は `docs/research.md`、半年研究レポートは `docs/half-year-research-report.md` に残します。
 
 ## 前提
 
@@ -40,6 +42,7 @@ python3 scripts/install.py uninstall [--dry-run]
 - `toolbox/skills/pr-quality-gate-worker/`（`SKILL.md`, `scripts/check-pr-quality.sh`）
 - `toolbox/skills/harness-report-writer/`（`SKILL.md`, `scripts/write-report.sh`, `references/report-template.md`）
 - `toolbox/skills/orchestrator-worker/`（`SKILL.md`, `scripts/run-task.sh`）
+- `toolbox/agents/`（ハーネス用サブエージェント定義）
 - `toolbox/hooks/preflight.sh`
 - `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 
@@ -49,6 +52,8 @@ AGENTS の管理方針:
 - リポジトリ運用ルールの正本は `AGENTS.md`（プロジェクト用）
 - 配備用グローバルルールの正本は `toolbox/AGENTS.md`（`~/.codex/AGENTS.md` へ配備）
 - 補助ルールは `docs/repository-rules.md` を参照
+
+リポジトリ構造と Git 管理方針は `docs/repository-layout.md` を参照。
 
 ## タスク台帳運用
 
@@ -153,6 +158,31 @@ bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
 - 実行時に `running -> passed/failed` を更新
 - 失敗時は `queued(retries=n)` へ戻して再試行
 - 同じ `task-id` を再実行すると state から再開（`passed` は即終了）
+
+## 事前確認・技術調査サブエージェント
+
+実装前の確認は、`precheck`（コード確認）と `research`（外部技術調査）を分離して運用します。
+
+- `harness-prechecker`（コード確認）:
+  - 用途: エントリポイント特定、影響範囲確認、回帰リスク整理、必要検証の抽出
+  - 出力必須: `entrypoints`, `impact_scope`, `risks`, `required_checks`
+- `harness-researcher`（外部調査）:
+  - 用途: 採用技術の比較、互換性/制約確認、最新情報の裏取り
+  - 出力必須: `recommendation`, `alternatives`, `risks`, `sources`（URL と確認日）
+
+役割分離:
+- `harness-prechecker` / `harness-researcher`: 調査専任（原則コード編集しない）
+- `harness-worker` / `harness-worker-lite`: 実装専任
+
+運用ルール:
+- 既存コード理解が主目的なら `harness-prechecker` を先行する。
+- 外部仕様や技術選定が主目的なら `harness-researcher` を先行する。
+- 両方必要な場合は `harness-prechecker -> harness-researcher` の順で実行する。
+- 不確実性が高いタスクは、調査完了前に実装へ進まない。
+- 調査結果の最終採否は `harness-orchestrator` が決定する。
+
+## PR作成
+
 PR作成時はテンプレートを使う:
 
 ```bash

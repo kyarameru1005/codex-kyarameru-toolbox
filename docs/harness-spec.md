@@ -19,6 +19,8 @@
 
 - Planner: 実行計画（ジョブ定義）を決定
 - Orchestrator: 状態遷移、再試行、タイムアウト、並列数制御
+- Prechecker: 実装前に既存コードを確認し、影響範囲・リスク・必要検証を整理する
+- Researcher: 実装前の事前調査/技術調査を行い、根拠付きで提案を返す
 - Worker: 実処理（実装・検証・更新）を実行
 - Quality Gate: 合否判定
 - Reporter: レポートとメトリクスを記録
@@ -101,6 +103,21 @@ v1では以下を標準とする。
   - `pytest` 実行が不要
 - 上記以外は `harness-worker` を使う。
 - 影響範囲が広い、または不確実性が高いタスクは `harness-worker` を必須にする。
+
+## 8.2 事前確認・調査サブエージェント選択ルール
+
+- 役割:
+  - `harness-prechecker`: リポジトリ内コードの確認専任（影響範囲/回帰リスク/必要検証）
+  - `harness-researcher`: 外部技術の最新調査専任（比較/採否材料/出典）
+- 選択基準:
+  - 既存コードの理解が主目的なら `harness-prechecker` を使う。
+  - 新規技術選定や外部仕様確認が主目的なら `harness-researcher` を使う。
+  - 両方必要な場合は `prechecker -> researcher` の順で実行する。
+- 出力必須項目:
+  - `harness-prechecker`: `entrypoints / impact_scope / risks / required_checks`
+  - `harness-researcher`: `recommendation / alternatives / risks / sources(確認日付き)`
+- どちらも原則コード編集は行わない。
+- 最終判断は `harness-orchestrator` が行い、採用案を `harness-worker` へ引き渡す。
 
 ## 9. チェックポイント
 

@@ -22,10 +22,11 @@ description: ハーネス構築の定期進捗レポートを docs/harness-repor
 
 ## 実行手順
 
-1. `scripts/write-report.sh` を実行する。
-2. プロンプトに従って `結論 / 実施内容 / 課題 / 次アクション / 検証` を1項目ずつ入力する。
-3. 必要なら追記して保存する。
-4. PR本文に要約（目的 / 変更点 / 検証結果）を反映する。
+1. `kyarameru-tool-box` リポジトリ配下へ移動する。
+2. `scripts/write-report.sh` を実行する。
+3. プロンプトに従って `結論 / 実施内容 / 課題 / 次アクション / 検証` を1項目ずつ入力する。
+4. 必要なら追記して保存する。
+5. PR本文に要約（目的 / 変更点 / 検証結果）を反映する。
 
 ## 主要コマンド
 
@@ -38,3 +39,8 @@ bash toolbox/skills/harness-report-writer/scripts/write-report.sh \
 
 - `docs/harness-reports/<timestamp>-<title>.md`
 - 見出し: `結論` / `実施内容` / `課題` / `次アクション` / `検証`
+
+## 制約
+
+- このスキルは `kyarameru-tool-box` リポジトリ配下でのみ実行する。
+- リポジトリ外で実行した場合、レポートは作成せずエラー終了する。

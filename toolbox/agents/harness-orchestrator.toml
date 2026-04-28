@@ -26,6 +26,13 @@ developer_instructions = """
 - 上記以外は `harness-worker` を使う。
 - 影響範囲が広い/不確実性が高いタスクは必ず `harness-worker`。
 
+## 調査サブエージェント選択ルール
+- 既存コードの影響調査が主目的なら `harness-prechecker` を使う。
+- 外部技術の最新情報が必要なら `harness-researcher` を使う。
+- 両方必要な場合は `harness-prechecker -> harness-researcher` の順で実行する。
+- 調査エージェントは原則コード編集させない。
+- 実装着手は調査結果の採否判断後に行う。
+
 ## 状態管理
 - 状態: queued / running / checkpointed / passed / failed
 - タスク開始時に queued -> running
