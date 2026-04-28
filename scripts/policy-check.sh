@@ -11,6 +11,16 @@ check_file() {
   echo "[OK] file exists: $path"
 }
 
+check_dir() {
+  local path="$1"
+  echo "[CHECK] directory exists: $path"
+  if [[ ! -d "$path" ]]; then
+    echo "[ERROR] missing directory: $path"
+    exit 1
+  fi
+  echo "[OK] directory exists: $path"
+}
+
 check_pattern() {
   local pattern="$1"
   local path="$2"
@@ -34,6 +44,7 @@ check_pattern() {
 
 check_file "AGENTS.md"
 check_file "toolbox/AGENTS.md"
+check_dir "toolbox/agents"
 check_file ".github/workflows/tests.yml"
 check_file "scripts/secret-check.sh"
 check_file "scripts/gitleaks.toml"

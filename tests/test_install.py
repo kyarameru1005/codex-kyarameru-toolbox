@@ -21,11 +21,13 @@ def load_module():
 def create_source_tree(root: Path) -> None:
     (root / "toolbox" / "skills" / "plan-worker").mkdir(parents=True)
     (root / "toolbox" / "skills" / "mcp-worker").mkdir(parents=True)
+    (root / "toolbox" / "agents").mkdir(parents=True)
     (root / "toolbox" / "hooks").mkdir(parents=True)
     (root / "toolbox" / "prompts").mkdir(parents=True)
 
     (root / "toolbox" / "skills" / "plan-worker" / "SKILL.md").write_text("plan", encoding="utf-8")
     (root / "toolbox" / "skills" / "mcp-worker" / "SKILL.md").write_text("mcp", encoding="utf-8")
+    (root / "toolbox" / "agents" / "harness-worker.toml").write_text("name = \"harness-worker\"\n", encoding="utf-8")
     (root / "toolbox" / "hooks" / "preflight.sh").write_text("#!/bin/sh\n", encoding="utf-8")
     (root / "toolbox" / "AGENTS.md").write_text("# global agents\n", encoding="utf-8")
 
@@ -40,6 +42,7 @@ def test_iter_source_entries_maps_to_codex_home(tmp_path: Path):
     targets = {e.target for e in entries}
     assert fake_home / ".codex" / "skills" / "plan-worker" in targets
     assert fake_home / ".codex" / "skills" / "mcp-worker" in targets
+    assert fake_home / ".codex" / "agents" / "harness-worker.toml" in targets
     assert fake_home / ".codex" / "hooks" / "preflight.sh" in targets
     assert fake_home / ".codex" / "AGENTS.md" in targets
 
@@ -55,6 +58,9 @@ def test_install_copy_and_manifest(tmp_path: Path):
     plan_skill = fake_home / ".codex" / "skills" / "plan-worker" / "SKILL.md"
     assert plan_skill.exists()
     assert plan_skill.read_text(encoding="utf-8") == "plan"
+    harness_worker = fake_home / ".codex" / "agents" / "harness-worker.toml"
+    assert harness_worker.exists()
+    assert harness_worker.read_text(encoding="utf-8") == 'name = "harness-worker"\n'
     global_agents = fake_home / ".codex" / "AGENTS.md"
     assert global_agents.exists()
     assert global_agents.read_text(encoding="utf-8") == "# global agents\n"
@@ -64,6 +70,7 @@ def test_install_copy_and_manifest(tmp_path: Path):
     data = json.loads(manifest.read_text(encoding="utf-8"))
     assert data["app"] == installer.APP_NAME
     assert str(fake_home / ".codex" / "skills" / "plan-worker") in data["paths"]
+    assert str(fake_home / ".codex" / "agents" / "harness-worker.toml") in data["paths"]
     assert str(fake_home / ".codex" / "AGENTS.md") in data["paths"]
 
 
@@ -222,6 +229,10 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
     write_file(
         tmp_path / "toolbox" / "skills" / "pr-quality-gate-worker" / "scripts" / "check-pr-quality.sh",
         "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock quality gate\"\n",
+    )
+    write_file(
+        tmp_path / "toolbox" / "agents" / "harness-worker.toml",
+        "name = \"harness-worker\"\n",
     )
     write_file(
         tmp_path / "toolbox" / "skills" / "harness-report-writer" / "SKILL.md",

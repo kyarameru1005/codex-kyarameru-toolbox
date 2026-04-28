@@ -66,10 +66,15 @@ if [[ $CHECK_OWNERSHIP -eq 1 ]]; then
   owner_dirs=(
     toolbox/cache
     toolbox/hooks
+    toolbox/log
     toolbox/mcp
     toolbox/plugins
+    toolbox/plugins/cache
     toolbox/prompts
     toolbox/scripts
+    toolbox/sessions
+    toolbox/sqlite
+    toolbox/tmp
     toolbox/vendor_imports
   )
 

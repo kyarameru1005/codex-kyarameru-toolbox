@@ -45,6 +45,7 @@ def iter_source_entries(root: Path | None = None, home: Path | None = None) -> l
     target_root = codex_home(home)
     mappings = {
         "skills": target_root / "skills",
+        "agents": target_root / "agents",
         "hooks": target_root / "hooks",
         "prompts": target_root / "prompts",
     }
