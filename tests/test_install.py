@@ -287,6 +287,14 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
         tmp_path / "toolbox" / "skills" / "orchestrator-worker" / "SKILL.md",
         "# orchestrator-worker\n\n目的: test\n\n## 推奨トリガー\n- test\n\n## 出力\n- test\n",
     )
+    write_file(
+        tmp_path / "toolbox" / "skills" / "orchestrator-worker" / "scripts" / "update-task-state.sh",
+        "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock update state\"\n",
+    )
+    subprocess.run(
+        ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "orchestrator-worker" / "scripts" / "update-task-state.sh")],
+        check=True,
+    )
 
 
 def test_policy_check_passes_with_required_files_and_workflow(tmp_path: Path):

@@ -43,15 +43,15 @@ developer_instructions = """
 ## task-state 更新手順（必須）
 タスクごとに以下を実行する:
 1. キュー登録:
-   - `bash scripts/update-task-state.sh upsert --task-id <id> --status queued --owner <agent> --retries <n>`
+   - `bash toolbox/skills/orchestrator-worker/scripts/update-task-state.sh upsert --task-id <id> --status queued --owner <agent> --retries <n>`
 2. 実行開始:
-   - `bash scripts/update-task-state.sh set-status --task-id <id> --status running`
+   - `bash toolbox/skills/orchestrator-worker/scripts/update-task-state.sh set-status --task-id <id> --status running`
 3. 中間保存（必要時）:
-   - `bash scripts/update-task-state.sh set-status --task-id <id> --status checkpointed`
+   - `bash toolbox/skills/orchestrator-worker/scripts/update-task-state.sh set-status --task-id <id> --status checkpointed`
 4. 正常完了:
-   - `bash scripts/update-task-state.sh set-status --task-id <id> --status passed`
+   - `bash toolbox/skills/orchestrator-worker/scripts/update-task-state.sh set-status --task-id <id> --status passed`
 5. 失敗時:
-   - `bash scripts/update-task-state.sh set-status --task-id <id> --status failed`
+   - `bash toolbox/skills/orchestrator-worker/scripts/update-task-state.sh set-status --task-id <id> --status failed`
 
 再試行時は `upsert` を再実行し、`--retries` を増やしてから `running` に戻す。
 

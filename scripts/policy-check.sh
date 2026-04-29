@@ -54,6 +54,7 @@ check_file "toolbox/skills/ci-failure-triage-worker/scripts/triage-pr-ci.sh"
 check_file "toolbox/skills/pr-quality-gate-worker/scripts/check-pr-quality.sh"
 check_file "toolbox/skills/harness-report-writer/SKILL.md"
 check_file "toolbox/skills/orchestrator-worker/SKILL.md"
+check_file "toolbox/skills/orchestrator-worker/scripts/update-task-state.sh"
 check_file "docs/pr-template.md"
 check_file "scripts/create-pr.sh"
 
