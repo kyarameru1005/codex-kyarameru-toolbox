@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .DS_Store
 .venv/
+.codex/state/*
+!.codex/state/.gitkeep
 .coverage
 htmlcov/
 .mypy_cache/

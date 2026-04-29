@@ -9,8 +9,9 @@ user-invocable: true
 
 ## 目的
 
-- `toolbox/harness/state/tasks.json` を正本として、タスク状態を管理する。
+- repo ローカルの `.codex/state/orchestrator-state.json` を既定の正本として、タスク状態を管理する。
 - 失敗時に再試行し、途中停止後も同一 `task-id` で再開できる実行方式を提供する。
+- 状態更新ロジックをスキル配下へ同梱し、他リポジトリへ持ち込んでも再利用できるようにする。
 
 ## 推奨トリガー
 
@@ -37,7 +38,13 @@ bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
 - `--max-retries`: 再試行回数（既定: `0`）
 - `--retry-backoff-sec`: 再試行待機秒（既定: `3`）
 - `--checkpoint-command`: チェックポイント保存用コマンド（任意）
-- `--state-file`: 状態ファイルのパス（既定: `toolbox/harness/state/tasks.json`）
+- `--state-file`: 状態ファイルのパス（既定: `.codex/state/orchestrator-state.json`）
+
+## 再利用条件
+
+- `run-task.sh` は同じディレクトリにある `update-task-state.sh` を相対参照する。
+- 既定の state file は repo ローカル `.codex/state/orchestrator-state.json` で、必要なら `--state-file` で切り替えられる。
+- 利用側で必要なのは `bash` と `python3` のみで、repo 直下 `scripts/` への依存はない。
 
 ## 出力
 
@@ -50,4 +57,3 @@ bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
 - 標準出力:
   - 実行ステップログ
   - 失敗時の終了コードと再現コマンド
-

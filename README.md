@@ -143,7 +143,8 @@ bash scripts/report-validate-apply.sh \
 
 ## Orchestrator（task-state 再開実行）
 
-`orchestrator-worker` は `toolbox/harness/state/tasks.json` を使い、再開可能な実行を行います。
+`orchestrator-worker` は repo ローカル `.codex/state/orchestrator-state.json` を既定値として、再開可能な実行を行います。
+状態更新ヘルパーはスキル配下に同梱しているため、`toolbox/skills/orchestrator-worker/` を他リポジトリへ持ち込んでも利用できます。
 標準導線は次の1系統に固定します（必須入力: `task-id / owner / command / max-retries`）。
 
 ```bash
@@ -162,6 +163,7 @@ bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
 - タスク失敗時は `running -> failed`
 - 再試行時は `upsert(queued, retries=n+1)` 後に `running` へ遷移
 - 同じ `task-id` を再実行すると state から再開（`passed` は即終了）
+- 他リポジトリで使う場合も、まず repo ローカル state を使い、必要時のみ `--state-file <repo-local-path>` を明示する
 
 品質ゲートは次の順で統一します。
 

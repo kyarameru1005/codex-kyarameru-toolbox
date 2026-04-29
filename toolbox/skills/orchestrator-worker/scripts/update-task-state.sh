@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STATE_FILE="toolbox/harness/state/tasks.json"
+STATE_FILE=".codex/state/orchestrator-state.json"
 COMMAND="${1:-}"
 shift || true
 
 usage() {
   cat <<'USAGE'
 Usage:
-  bash scripts/update-task-state.sh <command> [options]
+  bash toolbox/skills/orchestrator-worker/scripts/update-task-state.sh <command> [options]
 
 Commands:
   init
@@ -17,7 +17,7 @@ Commands:
   show
 
 Options:
-  --file <path>  state file path (default: toolbox/harness/state/tasks.json)
+  --file <path>  state file path (default: .codex/state/orchestrator-state.json)
 USAGE
 }
 

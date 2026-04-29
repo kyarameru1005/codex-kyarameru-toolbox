@@ -6,6 +6,7 @@
 
 ```text
 .
+├── .codex/                  # repo ローカルの実行状態・一時的な台帳
 ├── .github/workflows/        # GitHub Actions の CI 定義
 ├── ai_log/                   # PR 化しない調査メモと一時対応記録
 ├── codex-initial-state/      # 初期配備状態の参照資料
@@ -19,7 +20,7 @@
 └── toolbox/                  # `~/.codex` へ配備する資材
     ├── agents/               # ハーネス用サブエージェント定義
     ├── cache/                # ローカルキャッシュ
-    ├── harness/              # ハーネス設定、状態台帳、入出力
+    ├── harness/              # ハーネス設定、入出力、補助資材
     ├── hooks/                # 配備対象フック
     ├── log/                  # ローカル実行ログ
     ├── mcp/                  # MCP 関連資材
@@ -36,6 +37,7 @@
 
 ## 管理対象
 
+- `.codex/`: repo ローカルの実行状態置き場。既定では `orchestrator-worker` の state を保持する。
 - `AGENTS.md`: リポジトリ運用ルールの正本。
 - `README.md`: セットアップ、運用、ハーネス手順の入口文書。
 - `pyproject.toml`: Python パッケージ設定と依存関係定義。
@@ -46,7 +48,7 @@
 - `codex-initial-state/`: 初期配備状態の参照資料。
 - `toolbox/AGENTS.md`: `~/.codex/AGENTS.md` へ配備するグローバルルール。
 - `toolbox/agents/`: `~/.codex/agents` へ配備するエージェント定義。
-- `toolbox/harness/`: ハーネス設定、状態台帳、必要な空ディレクトリ維持ファイル。
+- `toolbox/harness/`: ハーネス設定、入出力、必要な空ディレクトリ維持ファイル。
 - `toolbox/hooks/`: `~/.codex/hooks` へ配備するフック。
 - `toolbox/mcp/`: MCP 関連資材。
 - `toolbox/plugins/`: `~/.codex/plugins` へ配備するプラグイン資材。
@@ -66,6 +68,7 @@
 - `toolbox/shell_snapshots/`
 - `toolbox/sqlite/`
 - `toolbox/tmp/`
+- `.codex/state/*`
 - `scripts/__pycache__/`
 - `tests/__pycache__/`
 - `*.egg-info/`

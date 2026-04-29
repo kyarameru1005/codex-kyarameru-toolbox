@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+STATE_HELPER="$SCRIPT_DIR/update-task-state.sh"
+
 TASK_ID=""
 OWNER=""
 TASK_COMMAND=""
 CHECKPOINT_COMMAND=""
 MAX_RETRIES=0
 RETRY_BACKOFF_SEC=3
-STATE_FILE="toolbox/harness/state/tasks.json"
+STATE_FILE=".codex/state/orchestrator-state.json"
 
 usage() {
   cat <<'USAGE'
@@ -84,7 +87,7 @@ fi
 ensure_state() {
   if [[ ! -f "$STATE_FILE" ]]; then
     echo "[INFO] state file not found. initialize: $STATE_FILE"
-    bash scripts/update-task-state.sh init --file "$STATE_FILE"
+    bash "$STATE_HELPER" init --file "$STATE_FILE"
   fi
 }
 
@@ -159,7 +162,7 @@ CURRENT_STATUS="$(read_task_status)"
 CURRENT_RETRIES="$(read_task_retries)"
 
 if [[ "$CURRENT_STATUS" == "__NONE__" ]]; then
-  bash scripts/update-task-state.sh upsert \
+  bash "$STATE_HELPER" upsert \
     --file "$STATE_FILE" \
     --task-id "$TASK_ID" \
     --status queued \
@@ -175,18 +178,18 @@ ATTEMPT="$CURRENT_RETRIES"
 
 while true; do
   echo "[STEP] task=$TASK_ID attempt=$ATTEMPT/$MAX_RETRIES"
-  bash scripts/update-task-state.sh set-status \
+  bash "$STATE_HELPER" set-status \
     --file "$STATE_FILE" \
     --task-id "$TASK_ID" \
     --status running
 
   if [[ -n "$CHECKPOINT_COMMAND" ]]; then
     if run_with_report "CHECKPOINT" "$CHECKPOINT_COMMAND"; then
-      bash scripts/update-task-state.sh set-status \
+      bash "$STATE_HELPER" set-status \
         --file "$STATE_FILE" \
         --task-id "$TASK_ID" \
         --status checkpointed
-      bash scripts/update-task-state.sh set-status \
+      bash "$STATE_HELPER" set-status \
         --file "$STATE_FILE" \
         --task-id "$TASK_ID" \
         --status running
@@ -194,7 +197,7 @@ while true; do
   fi
 
   if run_with_report "TASK" "$TASK_COMMAND"; then
-    bash scripts/update-task-state.sh set-status \
+    bash "$STATE_HELPER" set-status \
       --file "$STATE_FILE" \
       --task-id "$TASK_ID" \
       --status passed
@@ -202,7 +205,7 @@ while true; do
     exit 0
   fi
 
-  bash scripts/update-task-state.sh set-status \
+  bash "$STATE_HELPER" set-status \
     --file "$STATE_FILE" \
     --task-id "$TASK_ID" \
     --status failed
@@ -213,7 +216,7 @@ while true; do
   fi
 
   ATTEMPT=$((ATTEMPT + 1))
-  bash scripts/update-task-state.sh upsert \
+  bash "$STATE_HELPER" upsert \
     --file "$STATE_FILE" \
     --task-id "$TASK_ID" \
     --status queued \
@@ -225,4 +228,3 @@ while true; do
     sleep "$RETRY_BACKOFF_SEC"
   fi
 done
-
