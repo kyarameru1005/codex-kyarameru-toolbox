@@ -43,6 +43,15 @@
 4. `running -> failed`（再試行不可 or 上限超過）
 5. `failed -> queued`（再試行可能な場合のみ）
 
+更新コマンド対応:
+
+1. 初回登録: `upsert(queued, retries=0)`
+2. 実行開始: `set-status(running)`
+3. チェックポイント成功時: `set-status(checkpointed)` 後に `set-status(running)`
+4. 成功終了: `set-status(passed)`
+5. 失敗終了: `set-status(failed)`
+6. 再試行時: `upsert(queued, retries=n+1)` 後に `set-status(running)`
+
 ## 5. 入出力契約
 
 入力:
@@ -73,6 +82,14 @@ v1では以下を標準とする。
 
 `quick` モードでは `policy + quick` を必須、`full` は任意。
 `full` モードでは `policy + quick + full` を必須。
+
+標準導線の固定順序:
+
+1. `policy-check`（`bash scripts/policy-check.sh`）
+2. `harness --quick`（`bash scripts/harness.sh --quick`）
+3. 必要時のみ `pytest`（`python -m pytest -q`）
+
+orchestrator は上記の順序制御に専念し、品質判定は既存スクリプトへ委譲する。
 
 ## 7. 再試行・タイムアウト
 
@@ -119,6 +136,17 @@ v1では以下を標準とする。
 - どちらも原則コード編集は行わない。
 - 最終判断は `harness-orchestrator` が行い、採用案を `harness-worker` へ引き渡す。
 
+標準ハンドオフ順:
+
+1. `harness-prechecker` / `harness-researcher`
+2. `harness-worker` / `harness-worker-lite`
+3. `harness-reviewer`
+4. `harness-reporter`
+
+例外:
+
+- 調査不要の軽微変更は `harness-prechecker` / `harness-researcher` を省略可能。
+
 ## 9. チェックポイント
 
 最低限保持する情報:
@@ -146,6 +174,7 @@ v1では以下を標準とする。
 
 - `docs/harness-reports/<timestamp>-<title>.md`
 - `結論 / 実施内容 / 課題 / 次アクション / 検証`
+- 実行完了ごとに1件作成を必須とする（手動作成可）
 
 メトリクス:
 
@@ -177,12 +206,14 @@ v1では以下を標準とする。
 
 ```bash
 bash toolbox/skills/orchestrator-worker/scripts/run-task.sh \
-  --task-id T-018 \
+  --task-id T-ORCH-001 \
   --owner harness-worker \
-  --command "bash scripts/report-validate-apply.sh --title harness-t018 --quick" \
+  --command "bash scripts/report-validate-apply.sh --title harness-orch-001 --quick" \
   --max-retries 1 \
   --retry-backoff-sec 5
 ```
+
+標準コマンドの必須入力は `task-id / owner / command / max-retries` とする。
 
 補足:
 

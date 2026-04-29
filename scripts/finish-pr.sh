@@ -107,7 +107,7 @@ else
 fi
 
 echo "[INFO] precheck"
-bash toolbox/skills/git-pr-worker/scripts/pr_precheck.sh
+bash toolbox/skills/git-pr-worker/scripts/pr-precheck.sh
 
 if [[ $SKIP_VERIFY -eq 0 ]]; then
   echo "[INFO] run tests"

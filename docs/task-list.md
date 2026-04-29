@@ -17,7 +17,7 @@
 - [x] `T-003` [high] `update` 実行時に旧配備物（stale managed path）をクリーンアップする
 - [x] `T-004` [high] README の同梱内容を実装実態に合わせて修正する
 - [x] `T-005` [high] `plan-worker` / `mcp-worker` の SKILL 定義を具体化する
-- [x] `T-006` [medium] `check_agents_md.sh` のテストを追加する
+- [x] `T-006` [medium] `check-agents-md.sh` のテストを追加する
 - [x] `T-007` [medium] `update` 削除系のテストを追加する
 - [x] `T-008` [medium] AGENTS 重複管理の方針を README へ明記する
 - [x] `T-009` [high] スキル作成時の検証スキル（`skill-validation-worker`）を追加する

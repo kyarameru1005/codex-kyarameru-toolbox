@@ -215,7 +215,7 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
         workflow_content,
     )
     write_file(
-        tmp_path / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh",
+        tmp_path / "toolbox" / "skills" / "bootstrap-repository" / "scripts" / "check-agents-md.sh",
         "#!/usr/bin/env bash\nset -euo pipefail\necho \"[OK] mock check: $1\"\n",
     )
     write_file(
@@ -264,7 +264,7 @@ def setup_policy_repo(tmp_path: Path, workflow_content: str) -> None:
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "secret-check.sh")], check=True)
     subprocess.run(["chmod", "+x", str(tmp_path / "scripts" / "policy-check.sh")], check=True)
     subprocess.run(
-        ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh")],
+        ["chmod", "+x", str(tmp_path / "toolbox" / "skills" / "bootstrap-repository" / "scripts" / "check-agents-md.sh")],
         check=True,
     )
     subprocess.run(
@@ -363,10 +363,12 @@ def test_policy_check_fails_when_pr_template_lacks_required_section(tmp_path: Pa
 
 
 def test_check_agents_md_script_passes_with_required_content(tmp_path: Path):
-    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh"
+    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "bootstrap-repository" / "scripts" / "check-agents-md.sh"
     target = tmp_path / "AGENTS.md"
     target.write_text(
-        "# AGENTS\n目的\n優先\n応答\n実行\nGit\nログ\n命名\nkebab-case\nPR本文を正本とする\n",
+        "# AGENTS\n目的\n優先\n応答\n実行\nGit\nログ\n命名\nkebab-case\nDone条件\n検証結果\n"
+        "破壊的操作（git reset --hard）は明示依頼時のみ\nPR本文を正本とする\n"
+        "変更可能範囲\n報告フォーマット\n",
         encoding="utf-8",
     )
 
@@ -378,10 +380,11 @@ def test_check_agents_md_script_passes_with_required_content(tmp_path: Path):
     )
     assert result.returncode == 0
     assert "[OK] AGENTS.md check passed" in result.stdout
+    assert "[SUMMARY] ERROR: 0, WARN: 0" in result.stdout
 
 
 def test_check_agents_md_script_fails_when_ambiguous_phrase_exists(tmp_path: Path):
-    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "agents-md-writer" / "scripts" / "check_agents_md.sh"
+    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "bootstrap-repository" / "scripts" / "check-agents-md.sh"
     target = tmp_path / "AGENTS.md"
     target.write_text(
         "# AGENTS\n目的\n優先\n応答\n実行\nGit\nログ\n命名\nkebab-case\n必要に応じて判断する\n",
@@ -396,6 +399,44 @@ def test_check_agents_md_script_fails_when_ambiguous_phrase_exists(tmp_path: Pat
     )
     assert result.returncode != 0
     assert "ambiguous phrase found: 必要に応じて" in result.stdout
+
+
+def test_check_agents_md_script_warns_when_recommended_sections_missing(tmp_path: Path):
+    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "bootstrap-repository" / "scripts" / "check-agents-md.sh"
+    target = tmp_path / "AGENTS.md"
+    target.write_text(
+        "# AGENTS\n目的\n優先\n応答\n実行\nGit\nログ\n命名\nkebab-case\nDone条件\n検証結果\n"
+        "破壊的操作（git reset --hard）は明示依頼時のみ\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(script), str(target)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "[WARN]" in result.stdout
+    assert "[SUMMARY] ERROR: 0, WARN:" in result.stdout
+
+
+def test_check_agents_md_script_fails_when_destructive_constraint_missing(tmp_path: Path):
+    script = Path(__file__).resolve().parents[1] / "toolbox" / "skills" / "bootstrap-repository" / "scripts" / "check-agents-md.sh"
+    target = tmp_path / "AGENTS.md"
+    target.write_text(
+        "# AGENTS\n目的\n優先\n応答\n実行\nGit\nログ\n命名\nkebab-case\nDone条件\n検証結果\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(script), str(target)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert "missing destructive operation constraints" in result.stdout
 
 
 def test_check_skill_script_passes_for_valid_skill(tmp_path: Path):

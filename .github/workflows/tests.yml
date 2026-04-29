@@ -68,8 +68,8 @@ jobs:
 
       - name: Validate repository AGENTS.md
         run: |
-          bash toolbox/skills/agents-md-writer/scripts/check_agents_md.sh AGENTS.md
+          bash toolbox/skills/bootstrap-repository/scripts/check-agents-md.sh AGENTS.md
 
       - name: Validate global AGENTS.md template
         run: |
-          bash toolbox/skills/agents-md-writer/scripts/check_agents_md.sh toolbox/AGENTS.md
+          bash toolbox/skills/bootstrap-repository/scripts/check-agents-md.sh toolbox/AGENTS.md
