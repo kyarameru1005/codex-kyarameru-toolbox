@@ -48,7 +48,7 @@ check_dir "toolbox/agents"
 check_file ".github/workflows/tests.yml"
 check_file "scripts/secret-check.sh"
 check_file "scripts/gitleaks.toml"
-check_file "toolbox/skills/agents-md-writer/scripts/check_agents_md.sh"
+check_file "toolbox/skills/bootstrap-repository/scripts/check-agents-md.sh"
 check_file "toolbox/skills/skill-validation-worker/scripts/check-skill.sh"
 check_file "toolbox/skills/ci-failure-triage-worker/scripts/triage-pr-ci.sh"
 check_file "toolbox/skills/pr-quality-gate-worker/scripts/check-pr-quality.sh"
@@ -58,8 +58,8 @@ check_file "docs/pr-template.md"
 check_file "scripts/create-pr.sh"
 
 echo "[CHECK] validate AGENTS.md files"
-bash toolbox/skills/agents-md-writer/scripts/check_agents_md.sh AGENTS.md
-bash toolbox/skills/agents-md-writer/scripts/check_agents_md.sh toolbox/AGENTS.md
+bash toolbox/skills/bootstrap-repository/scripts/check-agents-md.sh AGENTS.md
+bash toolbox/skills/bootstrap-repository/scripts/check-agents-md.sh toolbox/AGENTS.md
 echo "[OK] AGENTS.md validation"
 
 WORKFLOW_FILE=".github/workflows/tests.yml"
