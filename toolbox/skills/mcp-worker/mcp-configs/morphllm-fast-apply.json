@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "morphllm-fast-apply": {
-      "command": "npx",
-      "args": ["-y", "@morph-llm/morph-fast-apply"]
-    }
-  }
-}
