@@ -1,82 +1,50 @@
 # Repository Layout
 
-この文書は、リポジトリ内の主要ディレクトリの責務と Git 管理方針を定義する。
+このリポジトリは `toolbox/` を Codex 設定の原本として管理し、名前付きコピーと `~/.codex` への安全な適用を扱う。
 
-## 構成
+## 主要ディレクトリ
 
-```text
-.
-├── .codex/                  # repo ローカルの実行状態・一時的な台帳
-├── .github/workflows/        # GitHub Actions の CI 定義
-├── ai_log/                   # PR 化しない調査メモと一時対応記録
-├── codex-initial-state/      # 初期配備状態の参照資料
-├── docs/                     # 仕様、研究メモ、運用文書
-│   ├── faile/                # 参考メモとして残す既存文書
-│   └── harness-reports/      # ハーネス進捗レポート
-├── scripts/                  # インストール、検証、PR 補助スクリプト
-├── tests/                    # Python テスト
-├── pyproject.toml            # Python パッケージ設定
-├── rules.md                  # 補助ルール文書
-└── toolbox/                  # `~/.codex` へ配備する資材
-    ├── agents/               # ハーネス用サブエージェント定義
-    ├── cache/                # ローカルキャッシュ
-    ├── harness/              # ハーネス設定、入出力、補助資材
-    ├── hooks/                # 配備対象フック
-    ├── log/                  # ローカル実行ログ
-    ├── mcp/                  # MCP 関連資材
-    ├── plugins/              # 配備対象プラグイン資材
-    ├── prompts/              # 配備対象プロンプト
-    ├── scripts/              # `toolbox/` 配下の補助スクリプト
-    ├── sessions/             # ローカル実行セッション
-    ├── shell_snapshots/      # 実行時シェルスナップショット
-    ├── skills/               # `~/.codex/skills` へ配備するスキル本体
-    ├── sqlite/               # ローカル SQLite 資材
-    ├── tmp/                  # 一時作業領域
-    └── vendor_imports/       # 外部取り込み資材
-```
+- `toolbox/`: Codex 設定原本。`~/.codex` へ適用する候補をここで管理する。初期状態では `config.toml`, `AGENTS.md` と空の設定ディレクトリ群を置く。
+- `toolbox-名前/`: `toolbox/` から作成した名前付きコピー。例: `toolbox-greece/`, `toolbox-japan/`。
+- `scripts/`: 複製・適用・検証スクリプトを置く。
+- `tests/`: スクリプトの単体テストを置く。
+- `docs/`: 運用・設計・リポジトリ構造の正本文書を置く。
 
-## 管理対象
+## 適用対象
 
-- `.codex/`: repo ローカルの実行状態置き場。既定では `orchestrator-worker` の state を保持する。
-- `AGENTS.md`: リポジトリ運用ルールの正本。
-- `README.md`: セットアップ、運用、ハーネス手順の入口文書。
-- `pyproject.toml`: Python パッケージ設定と依存関係定義。
-- `rules.md`: 補助ルール文書。
-- `scripts/`: インストール、検証、PR 作成などの運用スクリプト。
-- `tests/`: Python テスト。
-- `docs/`: 仕様、研究計画、運用メモ、PR テンプレート、ハーネスレポート。
-- `codex-initial-state/`: 初期配備状態の参照資料。
-- `toolbox/AGENTS.md`: `~/.codex/AGENTS.md` へ配備するグローバルルール。
-- `toolbox/agents/`: `~/.codex/agents` へ配備するエージェント定義。
-- `toolbox/harness/`: ハーネス設定、入出力、必要な空ディレクトリ維持ファイル。
-- `toolbox/hooks/`: `~/.codex/hooks` へ配備するフック。
-- `toolbox/mcp/`: MCP 関連資材。
-- `toolbox/plugins/`: `~/.codex/plugins` へ配備するプラグイン資材。
-- `toolbox/prompts/`: `~/.codex/prompts` へ配備するプロンプト。
-- `toolbox/scripts/`: `toolbox/` 配下で使う補助スクリプト。
-- `toolbox/skills/`: `~/.codex/skills` へ配備するスキル本体。
+`scripts/toolbox-manager.py apply` が `~/.codex` へ適用する対象は次に限定する。
+空ディレクトリ保持用の `.gitkeep` は適用しない。
 
-## Git 管理しないもの
+- `config.toml`
+- `AGENTS.md`
+- `skills/`
+- `agents/`
+- `hooks/`
+- `prompts/`
+- `plugins/`
+- `mcp/`
+- `memories/`
 
-以下は生成物、外部取得キャッシュ、またはローカル実行時の作業資材として扱い、Git 管理しない。
+## 適用除外対象
 
-- `toolbox/cache/`
-- `toolbox/plugins/cache/`
-- `toolbox/vendor_imports/`
-- `toolbox/log/`
-- `toolbox/sessions/`
-- `toolbox/shell_snapshots/`
-- `toolbox/sqlite/`
-- `toolbox/tmp/`
-- `.codex/state/*`
-- `scripts/__pycache__/`
-- `tests/__pycache__/`
-- `*.egg-info/`
+認証情報、履歴、実行状態、DB、ログ、セッション、キャッシュは `~/.codex` へ適用しない。
 
-`toolbox/harness/output/` は実行出力を置くが、空ディレクトリ維持のため `.gitkeep` のみ管理する。
+- `auth.json`
+- `history.jsonl`
+- `session_index.jsonl`
+- `installation_id`
+- `*.sqlite*`
+- `log/`
+- `sessions/`
+- `shell_snapshots/`
+- `tmp/`
+- `.tmp/`
+- `cache/`
+- `vendor_imports/`
+- `models_cache.json`
+- `.codex-global-state.json`
 
-## 変更時の確認
+## マニフェスト
 
-- 配備対象を増やした場合は `scripts/install.py` と `tests/test_install.py` を更新する。
-- 必須ファイルや必須ディレクトリを増やした場合は `scripts/policy-check.sh` を更新する。
-- ignore 対象を増やした場合は、必要に応じて追跡済みファイルを `git rm --cached` で外す。
+適用時は `~/.codex/.kyarameru-tool-box-manifest.json` に管理対象だけを記録する。
+このマニフェストは `toolbox-manager.py status` の確認材料として使う。
