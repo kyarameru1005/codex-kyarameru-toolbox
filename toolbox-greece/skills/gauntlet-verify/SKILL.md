@@ -1,29 +1,29 @@
 ---
 name: gauntlet-verify
-description: Use when validating changes through tests, checks, or structured verification. Best for deciding what to run, interpreting results, and identifying missing evidence before completion.
+description: テスト、チェック、構造化された確認で変更を検証するときに使う。何を実行するか決める、結果を解釈する、完了前に不足している証拠を見つける作業に向いている。
 ---
 
 # gauntlet-verify
 
-Use this skill after implementation or when the user asks what should be verified.
+実装後、またはユーザーが検証内容を求めたときに使う。
 
-## Focus
+## 重視すること
 
-- the smallest high-value checks
-- separating passed, failed, and unverified items
-- interpreting failures without overclaiming
-- identifying missing evidence before sign-off
+- 最小で価値の高い確認
+- 成功、失敗、未検証の分離
+- 過剰に断定しない失敗原因の解釈
+- 完了判断前に不足している証拠を見つけること
 
-## Workflow
+## 手順
 
-1. Identify the checks that match the change.
-2. Run or inspect the most relevant evidence.
-3. Summarize outcomes as pass, fail, or unverified.
-4. Call out the next useful check if coverage is incomplete.
+1. 変更内容に合う確認項目を特定する。
+2. 最も関連性の高い証拠を実行または確認する。
+3. 結果を pass、fail、unverified として整理する。
+4. カバレッジが不十分なら、次に有用な確認を示す。
 
-## Output
+## 出力
 
-- verification target
-- commands or evidence used
-- result summary
-- remaining gaps
+- 検証対象
+- 使用したコマンドまたは証拠
+- 結果の要約
+- 残っている不足や未確認事項

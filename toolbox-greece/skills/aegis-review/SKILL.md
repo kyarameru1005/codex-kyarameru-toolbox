@@ -1,28 +1,28 @@
 ---
 name: aegis-review
-description: Use when reviewing code or config changes for bugs, regressions, risky assumptions, maintainability issues, or defensive concerns. Best for post-implementation review, risk-focused reading, and concise findings.
+description: コードや設定変更をレビューし、バグ、回帰、危険な仮定、保守性の問題、防御的に確認すべき懸念を洗い出すときに使う。実装後レビュー、リスク重視の確認、簡潔な指摘に向いている。
 ---
 
 # aegis-review
 
-Use this skill after implementation or when the user asks for a review.
+実装後、またはユーザーがレビューを求めたときに使う。
 
-## Focus
+## 重視すること
 
-- bugs and behavioral regressions
-- risky assumptions and unclear edge cases
-- maintainability and readability risks
-- security-adjacent concerns worth escalating
+- バグと振る舞いの回帰
+- 危険な仮定と不明瞭な edge case
+- 保守性と可読性のリスク
+- エスカレーションすべきセキュリティ周辺の懸念
 
-## Workflow
+## 手順
 
-1. Read the changed files and nearby context.
-2. Prioritize real defects over style comments.
-3. Report only meaningful findings.
-4. If no findings exist, say so explicitly and note residual risk or missing verification.
+1. 変更ファイルと周辺文脈を読む。
+2. スタイル指摘より実害のある欠陥を優先する。
+3. 意味のある指摘だけを報告する。
+4. 指摘がない場合は明示し、残るリスクや未検証事項を書く。
 
-## Output
+## 出力
 
-- findings first, ordered by severity
-- file references when possible
-- short note on testing gaps or open questions
+- 重要度順の指摘を先に出す
+- 可能な場合はファイル参照を付ける
+- テスト不足や未解決の確認事項を短く書く
