@@ -1,5 +1,4 @@
 toolbox[0-9]*/
-toolbox-*/
 toolbox/.codex-global-state.json
 toolbox/.codex-global-state.json.bak
 toolbox/.personality_migration

@@ -1,28 +1,28 @@
 ---
 name: forge-implement
-description: Use when the required code or config change is understood and the task is to implement it cleanly with minimal scope. Best for focused edits, fixes, and small refactors.
+description: 必要なコード変更や設定変更が理解できており、最小範囲で clean に実装するときに使う。対象が明確な編集、修正、小さなリファクタに向いている。
 ---
 
 # forge-implement
 
-Use this skill when the implementation target is already clear enough to edit.
+実装対象が編集できる程度に明確なときに使う。
 
-## Focus
+## 重視すること
 
-- minimal, intentional code changes
-- consistency with existing patterns
-- avoiding unrelated edits
-- leaving the result verifiable
+- 最小限で意図が明確なコード変更
+- 既存パターンとの一貫性
+- 無関係な編集を避けること
+- 検証可能な状態で終えること
 
-## Workflow
+## 手順
 
-1. Confirm the target files and intended behavior.
-2. Edit the smallest correct surface.
-3. Preserve surrounding conventions unless the task requires change.
-4. Run the most relevant validation available.
+1. 対象ファイルと期待する振る舞いを確認する。
+2. 正しく直せる最小範囲を編集する。
+3. 変更が必要な場合を除き、周辺の慣習を維持する。
+4. 利用可能な最も関連性の高い検証を実行する。
 
-## Output
+## 出力
 
-- what changed
-- why the change was needed
-- what was verified and what was not
+- 何を変更したか
+- なぜ変更が必要だったか
+- 何を検証し、何を検証していないか
