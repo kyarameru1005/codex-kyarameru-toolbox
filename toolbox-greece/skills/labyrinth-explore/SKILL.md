@@ -1,28 +1,28 @@
 ---
 name: labyrinth-explore
-description: Use when the codebase, dependency flow, or impact area is unclear and you need structured exploration before design or implementation. Best for finding relevant files, entry points, and change boundaries.
+description: コードベース、依存の流れ、影響範囲が不明で、設計や実装の前に構造的な調査が必要なときに使う。関連ファイル、入口、変更境界を見つける作業に向いている。
 ---
 
 # labyrinth-explore
 
-Use this skill before editing when the correct files or flow are not yet clear.
+正しい編集対象や処理フローがまだ明確でないとき、編集前に使う。
 
-## Focus
+## 重視すること
 
-- entry points and call flow
-- related files and ownership boundaries
-- dependencies, config, and side effects
-- direct and indirect impact of a change
+- 入口と呼び出しの流れ
+- 関連ファイルと責務境界
+- 依存関係、設定、副作用
+- 変更の直接影響と間接影響
 
-## Workflow
+## 手順
 
-1. Start from the user's target behavior or file.
-2. Find the smallest relevant set of files.
-3. Trace flow only as far as needed.
-4. Separate confirmed facts from inference.
+1. ユーザーが求める振る舞い、または対象ファイルから始める。
+2. 関連する最小限のファイル集合を見つける。
+3. 必要な範囲までだけ処理フローを追う。
+4. 確認済みの事実と推測を分ける。
 
-## Output
+## 出力
 
-- short summary of the relevant area
-- list of key files with reasons
-- impact notes and likely risks before implementation
+- 関連領域の短い要約
+- 重要ファイルとその理由
+- 実装前に見るべき影響メモとリスク

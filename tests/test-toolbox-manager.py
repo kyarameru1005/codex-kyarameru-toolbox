@@ -50,6 +50,29 @@ def test_copy_can_use_named_toolbox_destination(tmp_path):
     assert "Created toolbox-greece" in result.stdout
 
 
+def test_copy_excludes_runtime_and_secret_state(tmp_path):
+    write(tmp_path / "toolbox" / "config.toml", "model = 'a'\n")
+    write(tmp_path / "toolbox" / "auth.json", "{}\n")
+    write(tmp_path / "toolbox" / "history.jsonl", "{}\n")
+    write(tmp_path / "toolbox" / "skills" / ".gitkeep", "")
+    write(tmp_path / "toolbox" / "skills" / "demo" / "SKILL.md", "# Demo\n")
+    write(tmp_path / "toolbox" / "skills" / "demo" / "state.sqlite", "db")
+    write(tmp_path / "toolbox" / "sessions" / "rollout.jsonl", "{}\n")
+    write(tmp_path / "toolbox" / "cache" / "tool.json", "{}\n")
+
+    run_manager(tmp_path, "copy", "--name", "greece")
+
+    destination = tmp_path / "toolbox-greece"
+    assert (destination / "config.toml").exists()
+    assert (destination / "skills" / "demo" / "SKILL.md").exists()
+    assert not (destination / "skills" / ".gitkeep").exists()
+    assert not (destination / "auth.json").exists()
+    assert not (destination / "history.jsonl").exists()
+    assert not (destination / "skills" / "demo" / "state.sqlite").exists()
+    assert not (destination / "sessions").exists()
+    assert not (destination / "cache").exists()
+
+
 def test_apply_can_select_named_toolbox(tmp_path):
     write(tmp_path / "toolbox" / "config.toml", "model = 'base'\n")
     write(tmp_path / "toolbox-greece" / "config.toml", "model = 'two'\n")
@@ -118,6 +141,25 @@ def test_apply_backs_up_overwritten_files(tmp_path):
     assert len(backups) == 1
     assert (backups[0] / "config.toml").read_text() == "model = 'old'\n"
     assert (codex_home / "config.toml").read_text() == "model = 'new'\n"
+
+
+def test_apply_replaces_directory_contents_wholesale(tmp_path):
+    write(tmp_path / "toolbox" / "skills" / "demo" / "SKILL.md", "# New\n")
+    codex_home = tmp_path / "codex-home"
+    write(codex_home / "skills" / "demo" / "SKILL.md", "# Old\n")
+    write(codex_home / "skills" / "demo" / "legacy.txt", "stale\n")
+
+    run_manager(
+        tmp_path,
+        "apply",
+        "--codex-home",
+        str(codex_home),
+        "--yes",
+        "--no-backup",
+    )
+
+    assert (codex_home / "skills" / "demo" / "SKILL.md").read_text() == "# New\n"
+    assert not (codex_home / "skills" / "demo" / "legacy.txt").exists()
 
 
 def test_safe_alias_backs_up_and_overwrites(tmp_path):

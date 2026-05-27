@@ -1,15 +1,15 @@
 # AGENTS.md
 
-このリポジトリでは、まず `README.md` を確認し、詳細な作業ルールは `docs/agents/` 配下を参照する。
+このリポジトリでは、まず `README.md` を確認し、詳細な作業ルールは `docs/distribution/agents/` 配下を参照する。
 
 ## Goal
 Codex の設定を安全に試し、必要な設定だけを自分の環境へ適用できる状態を保つ。
 
 ## Entry Points
-- 全体概要: `docs/agents/overview.md`
-- 作業手順: `docs/agents/workflow.md`
-- 編集と安全ルール: `docs/agents/rules.md`
-- コマンドと検証: `docs/agents/validation.md`
+- 全体概要: `docs/distribution/agents/overview.md`
+- 作業手順: `docs/distribution/agents/workflow.md`
+- 編集と安全ルール: `docs/distribution/agents/rules.md`
+- コマンドと検証: `docs/distribution/agents/validation.md`
 
 ## Core Rules
 - 変更は最小限にとどめる。

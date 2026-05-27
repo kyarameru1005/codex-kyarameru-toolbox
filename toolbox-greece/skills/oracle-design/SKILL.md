@@ -1,28 +1,28 @@
 ---
 name: oracle-design
-description: Use when implementation depends on choosing a structure, interface, responsibility split, or architectural direction. Best for design tradeoffs, option comparison, and pre-implementation decisions.
+description: 実装前に構造、インターフェース、責務分担、アーキテクチャ方針を選ぶ必要があるときに使う。設計トレードオフ、選択肢比較、実装前の意思決定に向いている。
 ---
 
 # oracle-design
 
-Use this skill when design decisions matter more than immediate editing.
+すぐ編集することより、設計判断の質が重要なときに使う。
 
-## Focus
+## 重視すること
 
-- responsibility boundaries
-- interface and configuration shape
-- extensibility and operational simplicity
-- tradeoffs between options
+- 責務境界
+- インターフェースと設定の形
+- 拡張性と運用の単純さ
+- 選択肢間のトレードオフ
 
-## Workflow
+## 手順
 
-1. Define the decision that must be made.
-2. Compare a small number of realistic options.
-3. Prefer the simplest design that satisfies the requirement.
-4. Note consequences for implementation and testing.
+1. 決めるべきことを明確にする。
+2. 現実的な少数の選択肢を比較する。
+3. 要件を満たす最も単純な設計を優先する。
+4. 実装とテストへの影響を書く。
 
-## Output
+## 出力
 
-- recommended approach
-- rejected alternatives with short reasons
-- implementation guidance for the next step
+- 推奨方針
+- 採用しなかった選択肢と短い理由
+- 次の実装に向けた指針

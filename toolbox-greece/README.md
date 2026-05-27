@@ -65,7 +65,7 @@
 - `Chronos`
   ログと振り返り担当です。実行記録、判断履歴、改善点を整理します。
 
-詳しい考え方は [agents/README.md](/Users/ryukisato/deta_box/Project/kyarameru-tool-box/toolbox-greece/agents/README.md) を参照してください。
+詳しい考え方は [agents/README.md](agents/README.md) を参照してください。
 
 ## スキル一覧
 
@@ -90,7 +90,13 @@
 - `chronicle-docs`
   文書化用です。README、設計メモ、変更理由、記録整理に使います。
 
-この 6 個が、この toolbox の最小スキルセットです。
+- `argo-git-flow`
+  Git 作業用です。作業前のブランチ切り替え、ブランチ作成、ステージング、コミット、プッシュ、PR 作成に使います。
+
+- `atlas-repository`
+  リポジトリ構造整理用です。ディレクトリ責務、ファイル配置、命名、docs/tests/scripts などの境界を揃えるときに使います。
+
+この 8 個が、この toolbox の最小スキルセットです。
 
 ## オーケストレーションの基本
 
@@ -184,12 +190,13 @@
 この toolbox では、次のルールを重視します。
 
 - 推測より確認を優先する
+- 作業前に Git の状態を確認し、必要に応じて `codex/` で始まる作業ブランチへ分けてから変更する
 - 変更は Codex を起動した `cwd` 配下に限定する
 - 変更は必要最小限にとどめる
 - `cwd` 外の変更や破壊的操作は事前確認する
 - 秘密情報や実行時データは追加しない
 
-短い版は [AGENTS.md](/Users/ryukisato/deta_box/Project/kyarameru-tool-box/toolbox-greece/AGENTS.md) にあります。
+短い版は [AGENTS.md](AGENTS.md) にあります。
 
 ## 並列化するときの注意
 

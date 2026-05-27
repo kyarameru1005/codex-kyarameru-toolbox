@@ -1,0 +1,4 @@
+interface:
+  display_name: "Atlas Repository"
+  short_description: "リポジトリ構造と配置ルールを整える"
+  default_prompt: "$atlas-repository を使って、リポジトリ構造を確認し、整理方針と必要な最小変更を提案してください。"

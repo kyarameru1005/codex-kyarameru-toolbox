@@ -1,25 +1,29 @@
 # kyarameru-tool-box
 
-`toolbox/` を Codex 設定の原本として管理するリポジトリです。
-原本を `toolbox-greece/`, `toolbox-japan/` のような `toolbox-名前/` へ複製し、必要な toolbox だけを `~/.codex` へ安全に適用します。
+`toolbox/` を初期状態へ戻すための原本として管理し、配布用に整えた `toolbox-名前/` を `~/.codex` へ安全に置換するリポジトリです。
 
-このリポジトリで扱うのは設定ファイルと設定ディレクトリです。認証情報、履歴、DB、ログ、セッション、キャッシュは `~/.codex` へ適用しません。
+このリポジトリで扱うのは設定ファイルと設定ディレクトリです。認証情報、履歴、DB、ログ、セッション、キャッシュは `~/.codex` へ置換しません。
 
-初期構成として `toolbox/config.toml`, `toolbox/AGENTS.md` に加え、`skills/`, `plugins/`, `agents/`, `hooks/`, `prompts/`, `mcp/`, `memories/` を空ディレクトリとして含めます。
+初期状態の `toolbox/` には `toolbox/config.toml`, `toolbox/AGENTS.md` に加え、`skills/`, `plugins/`, `agents/`, `hooks/`, `prompts/`, `mcp/`, `memories/` を空ディレクトリとして含めます。
 各ディレクトリの中身は初期状態では作成せず、必要になった項目だけ後から追加します。
+
+## 配布方針
+
+- `toolbox/`: 初期状態へ戻すための最小 toolbox。設定をリセットしたい場合に使う。
+- `toolbox-greece/`: 設定済み toolbox の第1号。ギリシャ神話モチーフのエージェントとスキルを含む配布サンプルとして扱う。
+- `toolbox-名前/`: 今後追加する配布用 toolbox。用途やテーマごとに増やしていく。
 
 ## できること
 
-- `toolbox/` を `toolbox-名前/` へ複製して用途別に管理する。
-- `toolbox/` または `toolbox-名前/` を指定して `~/.codex` へ適用する。
-- 適用前に `--dry-run` で変更予定と除外対象を確認する。
-- `--safe` でバックアップ付き適用、`--force` でバックアップなし適用を選べる。
-- 適用済みの管理対象を `~/.codex/.kyarameru-tool-box-manifest.json` に記録する。
+- 初期状態の `toolbox/` を `~/.codex` へ適用してリセットする。
+- 配布用の `toolbox-名前/` を用途別に管理する。
+- 指定した toolbox を `~/.codex` へ置換する。
+- `--dry-run`、`--safe`、`--force` を使って置換の確認と制御を行う。
+- 置換済みの管理対象を `~/.codex/.kyarameru-tool-box-manifest.json` に記録する。
 
 ## 前提
 
 - Python 3.11+
-- テスト実行時のみ pytest
 
 ## 基本フロー
 
@@ -29,32 +33,23 @@
 python3 scripts/toolbox-manager.py status
 ```
 
-2. 原本 `toolbox/` から名前付きコピーを作る。
-
-```bash
-python3 scripts/toolbox-manager.py copy --name greece
-```
-
-この例では `toolbox-greece/` を作ります。
-`--name japan` なら `toolbox-japan/`、`--name staging` なら `toolbox-staging/` を作ります。
-互換のため、`--name` を省略した場合は従来どおり次の空き番号 `toolboxN/` を作れます。
-
-3. 適用前に dry-run で確認する。
+2. 配布用 toolbox の置換内容を dry-run で確認する。
 
 ```bash
 python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --dry-run
 ```
 
-4. 問題なければバックアップ付きで適用する。
+3. 問題なければバックアップ付きで置換する。
 
 ```bash
 python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --safe
 ```
 
-バックアップを取らずに適用する場合:
+4. 初期状態へ戻したい場合は `toolbox/` を dry-run してから適用する。
 
 ```bash
-python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --force
+python3 scripts/toolbox-manager.py apply --toolbox toolbox --dry-run
+python3 scripts/toolbox-manager.py apply --toolbox toolbox --safe
 ```
 
 ## コマンド
@@ -65,11 +60,10 @@ python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --force
 python3 scripts/toolbox-manager.py copy [--source toolbox] [--name greece] [--dry-run]
 ```
 
-`--source` で指定した toolbox を、`--name` で指定した `toolbox-名前/` へそのまま複製します。
-たとえば `--name greece` なら `toolbox-greece/` を作ります。
-これはリポジトリ内のスナップショット作成なので、認証情報や履歴などが含まれていてもコピー対象から除外しません。
-`copy` は既存の中身をそのまま複製します。初期状態の空ディレクトリもそのまま引き継ぎます。
-`--name` を省略した場合は互換用に次の空き番号 `toolboxN/` を作ります。
+`--source` で指定した toolbox を、`--name` で指定した `toolbox-名前/` へ複製します。
+`--name` を省略した場合は次の空き番号 `toolboxN/` を作ります。
+既存の配布用 toolbox と同じ名前には上書きしません。
+認証情報、履歴、DB、ログ、セッション、キャッシュなどの除外対象は複製しません。
 
 ### apply
 
@@ -79,14 +73,10 @@ python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --safe
 python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --force
 ```
 
-指定した toolbox を `~/.codex` へ適用します。
-既定の適用元は `toolbox/` です。
-
-既存ファイルを上書きする場合:
-
+指定した toolbox を `~/.codex` へ置換します。`AGENTS.md` を含む管理対象は既存の中身を消して再作成します。
+- `--safe`: バックアップ付きで置換する。
+- `--force`: バックアップなしで置換する。
 - 対話実行では確認プロンプトを出す。
-- `--safe`: 確認なしで上書きし、上書き前のファイルを `~/.codex/backup/<timestamp>/` へ退避する。
-- `--force`: 確認なしで上書きし、バックアップは作らない。
 - 互換用に `--yes --backup` と `--yes --no-backup` も使える。
 
 ### status
@@ -97,10 +87,10 @@ python3 scripts/toolbox-manager.py status [--toolbox toolbox] [--codex-home ~/.c
 
 指定した toolbox と `~/.codex` の管理対象を比較し、`current`, `different`, `missing` を表示します。
 
-## 適用対象
+## 置換対象
 
-`apply` が `~/.codex` へ適用する対象は次に限定します。
-空ディレクトリをリポジトリで保持するための `.gitkeep` は適用対象に含めません。
+`apply` が `~/.codex` で置き換える対象は次に限定します。
+空ディレクトリをリポジトリで保持するための `.gitkeep` は置換対象に含めません。
 
 - `config.toml`
 - `AGENTS.md`
@@ -112,9 +102,9 @@ python3 scripts/toolbox-manager.py status [--toolbox toolbox] [--codex-home ~/.c
 - `mcp/`
 - `memories/`
 
-## 適用除外
+## 置換除外
 
-次のファイルとディレクトリは `~/.codex` へ適用しません。
+次のファイルとディレクトリは `~/.codex` で置き換えません。
 
 - `auth.json`
 - `history.jsonl`
@@ -133,23 +123,23 @@ python3 scripts/toolbox-manager.py status [--toolbox toolbox] [--codex-home ~/.c
 
 ## リポジトリ構造
 
-- `toolbox/`: Codex 設定原本。初期状態では `config.toml`, `AGENTS.md` と空の設定ディレクトリ群を置く。
-- `toolbox-名前/`: `toolbox/` から作成した名前付きコピー。例: `toolbox-greece/`, `toolbox-japan/`。
-- `scripts/`: 複製、適用、検証スクリプト。
+- `toolbox/`: 初期状態へ戻すための Codex 設定原本。`config.toml`, `AGENTS.md` と空の設定ディレクトリ群を置く。
+- `toolbox-greece/`: 設定済み toolbox の第1号。配布サンプルとして扱う。
+- `toolbox-名前/`: 今後追加する配布用 toolbox。例: `toolbox-japan/`, `toolbox-work/`。
+- `scripts/`: 複製、置換、検証スクリプト。
 - `tests/`: スクリプトの単体テスト。
-- `docs/`: 運用文書。
+- `docs/distribution/`: 配布用の運用文書。
+- `docs/private/`: 個人研究用のローカル文書。Git では追跡しない。
 
-詳細は `docs/repository-layout.md` を参照してください。
+詳細は `docs/distribution/repository-layout.md` を参照してください。
 
 ## テスト
 
-初回のみ開発依存を入れます。
+開発依存は初回のみ入れます。
 
 ```bash
 python3 -m pip install -e '.[dev]'
 ```
-
-テストを実行します。
 
 ```bash
 python3 -m pytest -q
@@ -163,7 +153,7 @@ bash toolbox/skills/bootstrap-repository/scripts/check-agents-md.sh AGENTS.md
 
 ## 安全メモ
 
-- 実運用の `~/.codex` へ適用する前に、必ず `--dry-run` で差分を確認する。
-- 認証情報や履歴を `~/.codex` へ反映したい場合でも、このスクリプトでは適用対象にしない。
-- 既存の `~/.codex` を上書きする運用では、原則 `--safe` を使う。
-- `--force` はバックアップ不要と判断できる場合だけ使う。
+- `--dry-run` で差分を確認してから `~/.codex` を置換する。
+- 認証情報や履歴は置換対象にしない。
+- 既存の `~/.codex` は原則 `--safe`、バックアップ不要を明確に理解している場合だけ `--force` を使う。
+- 初期状態へ戻す場合も、先に `apply --toolbox toolbox --dry-run` で確認する。

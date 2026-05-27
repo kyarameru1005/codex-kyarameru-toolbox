@@ -1,28 +1,28 @@
 ---
 name: chronicle-docs
-description: Use when writing or updating README files, design notes, change explanations, or project records. Best for turning technical work into clear, reusable documentation without bloating it.
+description: README、設計メモ、変更説明、プロジェクト記録を書いたり更新したりするときに使う。技術的な作業を、膨らませすぎず明確で再利用しやすい文書にする作業に向いている。
 ---
 
 # chronicle-docs
 
-Use this skill when the main task is explanation, documentation, or record keeping.
+主な作業が説明、文書化、記録整理のときに使う。
 
-## Focus
+## 重視すること
 
-- clear structure before detailed wording
-- preserving useful technical meaning
-- separating facts, decisions, and open questions
-- keeping documentation maintainable
+- 詳細な表現より先に構造を明確にする
+- 有用な技術的意味を保つ
+- 事実、判断、未解決事項を分ける
+- 文書を保守しやすく保つ
 
-## Workflow
+## 手順
 
-1. Identify the reader and purpose.
-2. Keep the structure simple and task-oriented.
-3. Prefer edits to existing docs over redundant new files.
-4. State what changed, why, and any important caveats.
+1. 読者と目的を特定する。
+2. 構造を単純でタスク指向にする。
+3. 冗長な新規ファイルより、既存文書の編集を優先する。
+4. 何が変わったか、なぜ変えたか、重要な注意点を書く。
 
-## Output
+## 出力
 
-- updated document content
-- concise summary of the message for the intended reader
-- open questions or follow-up items when needed
+- 更新後の文書内容
+- 想定読者向けの簡潔な要約
+- 必要に応じた未解決事項や follow-up
