@@ -37,14 +37,22 @@ EXCLUDED_NAMES = {
     "history.jsonl",
     "session_index.jsonl",
     "installation_id",
+    ".codex-global-state.json.bak",
+    ".personality_migration",
     ".gitkeep",
+    "ambient-suggestions",
+    "avatars",
+    "generated_images",
+    "pets",
     "log",
     "sessions",
     "shell_snapshots",
+    "sqlite",
     "tmp",
     ".tmp",
     "cache",
     "vendor_imports",
+    "version.json",
     "models_cache.json",
     ".codex-global-state.json",
 }
@@ -284,6 +292,11 @@ def require_apply_confirmation(
 
 
 def copy_dir_contents(source: Path, destination: Path) -> None:
+    if destination.exists():
+        if destination.is_dir():
+            shutil.rmtree(destination)
+        else:
+            destination.unlink()
     destination.mkdir(parents=True, exist_ok=True)
     for child in source.iterdir():
         rel_path = child.relative_to(source)
@@ -291,24 +304,26 @@ def copy_dir_contents(source: Path, destination: Path) -> None:
             continue
         target = destination / child.name
         if child.is_dir():
-            if target.exists() and not target.is_dir():
-                target.unlink()
             copy_dir_contents(child, target)
         else:
-            if target.exists() and target.is_dir():
-                shutil.rmtree(target)
+            if target.exists():
+                if target.is_dir():
+                    shutil.rmtree(target)
+                else:
+                    target.unlink()
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(child, target)
 
 
 def copy_path(source: Path, destination: Path) -> None:
     if source.is_dir():
-        if destination.exists() and not destination.is_dir():
-            destination.unlink()
         copy_dir_contents(source, destination)
     else:
-        if destination.exists() and destination.is_dir():
-            shutil.rmtree(destination)
+        if destination.exists():
+            if destination.is_dir():
+                shutil.rmtree(destination)
+            else:
+                destination.unlink()
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
 
@@ -351,7 +366,7 @@ def command_copy(args: argparse.Namespace) -> int:
     if args.dry_run:
         print("Dry run: no files changed.")
         return 0
-    shutil.copytree(source, destination, symlinks=True)
+    copy_path(source, destination)
     print(f"Created {destination.relative_to(repo_root)}")
     return 0
 

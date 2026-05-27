@@ -65,7 +65,7 @@
 - `Chronos`
   ログと振り返り担当です。実行記録、判断履歴、改善点を整理します。
 
-詳しい考え方は [agents/README.md](/Users/ryukisato/deta_box/Project/kyarameru-tool-box/toolbox-greece/agents/README.md) を参照してください。
+詳しい考え方は [agents/README.md](agents/README.md) を参照してください。
 
 ## スキル一覧
 
@@ -196,7 +196,7 @@
 - `cwd` 外の変更や破壊的操作は事前確認する
 - 秘密情報や実行時データは追加しない
 
-短い版は [AGENTS.md](/Users/ryukisato/deta_box/Project/kyarameru-tool-box/toolbox-greece/AGENTS.md) にあります。
+短い版は [AGENTS.md](AGENTS.md) にあります。
 
 ## 並列化するときの注意
 
