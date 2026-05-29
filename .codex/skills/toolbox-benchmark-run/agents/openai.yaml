@@ -1,0 +1,4 @@
+interface:
+  display_name: "Toolbox Benchmark Run"
+  short_description: "toolboxベンチの実行記録と評価を進める"
+  default_prompt: "toolbox-benchmark-run を使って、対象toolboxとバージョンを決め、ケース実行結果を保存し、gpt-5.5評価用の入力を整理してください。"
