@@ -32,7 +32,7 @@
   再利用しやすい作業パターンを置くディレクトリです。この toolbox では神話の道具・場所・概念を名前に使います。
 
 - `hooks/`, `prompts/`, `plugins/`, `mcp/`, `memories/`
-  必要になったときに拡張するためのディレクトリです。現時点では空です。
+  必要になったときに拡張するためのディレクトリです。`prompts/` には Zeus 起点の開始テンプレートを置いています。
 
 ## サブエージェント一覧
 
@@ -112,6 +112,8 @@
 5. 実装後は `Athena` や `Themis` で別視点の確認を入れる。
 6. セキュリティや危険操作が気になる場合は `Ares` を挟む。
 7. ドキュメント更新が必要なら `Apollo` と `chronicle-docs`、記録整理が必要なら `Chronos` を使う。
+
+最初の依頼文に迷う場合は [prompts/zeus-start.md](prompts/zeus-start.md) を入口として使います。
 
 ## 典型的な使い方
 
@@ -217,15 +219,23 @@
 
 ## 現在の状態
 
-現時点では、`config.toml` は最小構成です。
-そのため、この toolbox は「役割分担の考え方」と「エージェント定義」が中心で、プロファイル切替や詳細な runtime 設定はまだ絞り込んでいません。
+現時点では、`config.toml` に次の基本設定を入れています。
+
+- `model = "gpt-5.5"`
+- `model_reasoning_effort = "medium"`
+- `approval_policy = "on-request"`
+- `sandbox_mode = "workspace-write"`
+- `features.multi_agent = true`
+- `profiles.interactive`
+- `profiles.auto`
+
+そのため、この toolbox は「役割分担の考え方」だけでなく、複数エージェント前提の基本動作もすぐ試せる状態です。
 
 今後必要なら、次のような項目を追加できます。
 
-- `profiles.interactive` / `profiles.auto`
-- `multi_agent` の有効化
 - memory や worktree の設定
 - hooks や prompts の追加
+- モデルや推論強度のチューニング
 
 ## 使い始める人への目安
 
@@ -238,3 +248,5 @@
 4. 確認は `Athena` または `Themis`
 
 この流れに慣れてから、設計担当の `Daedalus`、文書担当の `Apollo`、記録担当の `Chronos`、リスク担当の `Ares` を足していくと、運用を崩しにくくなります。
+
+最初のメッセージに迷う場合は、`prompts/zeus-start.md` の短い版をそのまま使えば十分です。
