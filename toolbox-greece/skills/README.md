@@ -169,6 +169,27 @@ Git 作業フロー用スキルです。
 - `Daedalus`
 - `Hephaestus`
 
+### `zeus-orchestrate`
+
+オーケストレーション発火用スキルです。
+Zeus を入口にして、目的、前提、完了条件を確認し、必要な役割分担と進行計画を明示します。
+
+名前の由来:
+`Zeus` はこの toolbox の全体判断役で、作業開始時の指揮を明示的に発火する役割に合わせています。
+
+向いている場面:
+
+- 作業開始時に役割分担を明示したい
+- Hermes、Daedalus、Hephaestus などを使うか判断したい
+- 複雑な作業でチェックリストを作って進めたい
+
+組み合わせやすい相手:
+
+- `Zeus`
+- `Hermes`
+- `Daedalus`
+- `Hephaestus`
+
 ## 基本の使い分け
 
 迷ったときは、次の流れで考えると分かりやすいです。
@@ -188,6 +209,7 @@ Git 作業フロー用スキルです。
 - 文書化: `chronicle-docs`
 - Git 作業: `argo-git-flow`
 - リポジトリ整理: `atlas-repository`
+- オーケストレーション: `zeus-orchestrate`
 
 ## 典型的な組み合わせ
 
@@ -217,6 +239,7 @@ Git 作業フロー用スキルです。
 - `aegis-review`
 - `labyrinth-explore`
 - `forge-implement`
+- `zeus-orchestrate`
 
 この形なら雰囲気を保ちながら、初見でも役割を推測しやすくなります。
 
