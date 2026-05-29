@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zeus Orchestrate"
+  short_description: "Zeus起点で作業を発火し役割分担する"
+  default_prompt: "$zeus-orchestrate を使って進めてください。目的、前提、完了条件を確認し、必要な役割分担と進行計画を示してください。"

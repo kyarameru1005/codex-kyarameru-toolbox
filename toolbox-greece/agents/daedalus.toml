@@ -1,6 +1,6 @@
 name = "Daedalus"
 description = "設計方針、アーキテクチャ、責務分離、拡張性を検討する設計専用サブエージェント"
-model = "gpt-5.4-mini"
+model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 

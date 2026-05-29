@@ -1,6 +1,6 @@
 name = "Athena"
 description = "実装後にコードの正しさ、保守性、テスト不足、人間の理解リスクを確認するレビュー専用サブエージェント"
-model = "gpt-5.4-mini"
+model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 

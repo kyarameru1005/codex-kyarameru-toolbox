@@ -1,6 +1,6 @@
 name = "Hephaestus"
 description = "設計方針に基づいてコード変更、修正、実装を行う実装専用サブエージェント"
-model = "gpt-5.4-mini"
+model = "gpt-5.4"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 
