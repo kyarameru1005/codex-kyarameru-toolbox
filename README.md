@@ -47,8 +47,27 @@ python3 scripts/toolbox-manager.py apply --toolbox toolbox --safe
 - `--safe` で既存設定をバックアップしてから置換する。
 - `toolbox/` から新しい `toolbox-名前/` を作る。
 - 適用済みの管理対象を `~/.codex/.kyarameru-tool-box-manifest.json` に記録する。
+- Rust 製 `kytask` で、人間主導の作業計画と Codex 支援内容をローカル管理する。
 
 ## コマンド
+
+### kytask
+
+```bash
+cargo install --path crates/kyarameru-task
+kytask start "ハーネス改善" \
+  --goal "ユーザー主導で作業計画を進められる状態にする" \
+  --user-action "優先順位を決める" \
+  --codex-action "選択肢と差分を用意する"
+kytask plan
+kytask note --kind decision "repo ローカル状態で管理する"
+kytask check 1
+kytask finish --verification "cargo test: passed"
+```
+
+`kytask` は、長い Codex 作業を再開しやすくするためのタスク管理コマンドです。
+計画はユーザーを主軸にし、`user`, `codex`, `shared` の責務を分けて記録します。
+デフォルトの保存先は `.git/info/kyarameru-task/state.json` で、Git の差分には出ません。
 
 ### status
 
@@ -122,8 +141,9 @@ python3 scripts/toolbox-manager.py copy [--source toolbox] [--name greece] [--dr
 
 - `toolbox/`: 初期状態へ戻すための Codex 設定原本。
 - `toolbox-greece/`: 配布用 toolbox 第1号。
+- `crates/`: 配布用 Rust コマンド。
 - `scripts/`: toolbox の複製、適用、確認を行うスクリプト。
-- `tests/`: スクリプトの単体テスト。
+- `tests/`: Python スクリプトの単体テスト。
 - `docs/distribution/`: 配布用の運用文書。
 - `docs/private/`: 個人研究用のローカル文書。Git では追跡しません。
 
@@ -140,6 +160,7 @@ python3 -m pip install -e '.[dev]'
 テストを実行します。
 
 ```bash
+cargo test
 python3 -m pytest -q
 ```
 

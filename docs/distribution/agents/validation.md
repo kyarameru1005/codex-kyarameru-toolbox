@@ -7,6 +7,7 @@ python3 -m pip install -e '.[dev]'
 
 ## Required Test
 ```bash
+cargo test
 python3 -m pytest -q
 ```
 

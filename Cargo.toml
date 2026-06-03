@@ -1,0 +1,4 @@
+[workspace]
+members = ["crates/kyarameru-task"]
+resolver = "2"
+

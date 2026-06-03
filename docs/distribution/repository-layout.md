@@ -17,6 +17,7 @@
 - `toolbox/`: 初期状態へ戻すための Codex 設定原本。
 - `toolbox-greece/`: 配布用 toolbox 第1号。Zeus などの役割別エージェントと作業スキルを含む。
 - `toolbox-名前/`: 今後追加する配布用 toolbox。例: `toolbox-japan/`, `toolbox-work/`。
+- `crates/`: 配布用 Rust コマンド。`kyarameru-task` は `kytask` バイナリを提供する。
 - `scripts/`: toolbox の複製、適用、状態確認を行うスクリプト。
 - `tests/`: `scripts/` の単体テスト。
 - `docs/distribution/`: 配布用の導入手順、構成説明、運用ルール。
@@ -30,6 +31,12 @@
 
 配布準備の個人用タスクリストは `docs/private/distribution-task-list.md` に置く。
 これは配布対象ではない。
+
+## Rust コマンド
+
+`crates/kyarameru-task` は、人間主導の作業計画をローカル管理する `kytask` コマンドを提供する。
+導入は `cargo install --path crates/kyarameru-task` を基本とする。
+実行時の状態は `.git/info/kyarameru-task/state.json` に保存し、配布対象やコミット対象には含めない。
 
 ## Toolbox の中身
 
