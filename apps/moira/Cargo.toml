@@ -1,0 +1,15 @@
+[package]
+name = "moira"
+version = "0.1.0"
+edition = "2021"
+description = "タスクと再開コンテキストを .ai/moira.json で管理する CLI"
+readme = "README.md"
+repository = "https://github.com/kyarameru1005/kyarameru-tool-box"
+keywords = ["cli", "task", "ledger", "resume"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["clock"] }
