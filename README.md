@@ -47,8 +47,34 @@ python3 scripts/toolbox-manager.py apply --toolbox toolbox --safe
 - `--safe` で既存設定をバックアップしてから置換する。
 - `toolbox/` から新しい `toolbox-名前/` を作る。
 - 適用済みの管理対象を `~/.codex/.kyarameru-tool-box-manifest.json` に記録する。
+- Rust 製 `moira` で、タスクと再開コンテキストを `.ai/moira.json` にローカル管理する。
 
 ## コマンド
+
+### moira
+
+```bash
+cd apps/moira && cargo install --path .   # ~/.cargo/bin/moira（Rust 不要のバイナリ導入は apps/moira/README.md 参照）
+
+moira init                       # cwd に .ai/moira.json を作成
+moira add "設計を書く"           # タスク追加（todo）
+moira list                       # 一覧（[ ]=todo [~]=進行中 [x]=完了）
+moira start 1                    # 進行中へ
+moira done 1                     # 完了へ
+
+# 再開コンテキスト
+moira goal "moira に統一する"
+moira at "実装中"
+moira next "cargo test を通す"
+moira decide "保存形式は .ai/moira.json 単体に決定"
+
+moira show                       # 再開ビュー（meta + タスク）
+moira show --json                # 機械可読（エージェント連携用）
+```
+
+`moira` は、長い Codex 作業がトークン枯渇で要約・断絶しても再開できるよう、目的・現在地・次の一手・決定ログ・タスク状態をディスク上の `.ai/moira.json` で管理するコマンドです。
+`.ai/` は実行時データなのでコミットしません（`.gitignore` 済み）。
+詳しい導入・更新・削除は [apps/moira/README.md](apps/moira/README.md) を参照してください。
 
 ### status
 
@@ -122,8 +148,9 @@ python3 scripts/toolbox-manager.py copy [--source toolbox] [--name greece] [--dr
 
 - `toolbox/`: 初期状態へ戻すための Codex 設定原本。
 - `toolbox-greece/`: 配布用 toolbox 第1号。
+- `apps/moira/`: タスクと再開コンテキストを管理する Rust 製 CLI。
 - `scripts/`: toolbox の複製、適用、確認を行うスクリプト。
-- `tests/`: スクリプトの単体テスト。
+- `tests/`: Python スクリプトの単体テスト。
 - `docs/distribution/`: 配布用の運用文書。
 - `docs/private/`: 個人研究用のローカル文書。Git では追跡しません。
 
@@ -140,6 +167,7 @@ python3 -m pip install -e '.[dev]'
 テストを実行します。
 
 ```bash
+cargo test
 python3 -m pytest -q
 ```
 

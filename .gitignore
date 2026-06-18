@@ -57,3 +57,8 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+target/
+
+# moira（実行時タスク台帳 / Rust ビルド成果物）
+.ai/
+apps/moira/target/
