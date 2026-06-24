@@ -1,36 +1,19 @@
 # AGENTS.md
 
-このリポジトリでは、まず `README.md` を確認し、詳細な作業ルールは `docs/distribution/agents/` 配下を参照する。
+このリポジトリでは、単一プラグイン `plugins/kyarameru-tool-box/` を基準に作業する。
 
-## Goal
-Codex の設定を安全に試し、必要な設定だけを自分の環境へ適用できる状態を保つ。
+## ルール
 
-## Entry Points
-- 全体概要: `docs/distribution/agents/overview.md`
-- 作業手順: `docs/distribution/agents/workflow.md`
-- 編集と安全ルール: `docs/distribution/agents/rules.md`
-- コマンドと検証: `docs/distribution/agents/validation.md`
+- 応答は日本語で行う
+- 変更は必要最小限にとどめる
+- 破壊的操作やリポジトリ外の変更は事前確認する
+- 秘密情報や実運用データを追加しない
+- 旧 `toolbox` 置換フローは使わない
+- 最低でも `python3 -m pytest -q` を実行して確認する
 
-## Core Rules
-- 変更は最小限にとどめる。
-- リポジトリ外で破壊的な操作をしない。必要な場合は事前確認を取る。
-- ユーザーが加えた既存変更を勝手に巻き戻さない。
-- 秘密情報や実運用データを追加・コミットしない。
-- テスト未実行やエラー無視のまま完了扱いにしない。
+## 確認対象
 
-## Required Check
-- 最低でも `python3 -m pytest -q` を実行し、結果を報告する。
-- 実行できない検証がある場合は、理由を報告する。
-
-## Completion Criteria
-- 要件に直接対応する変更だけが含まれている。
-- 関連ドキュメントが実装と矛盾していない。
-- テスト結果を確認している。
-- 実行できなかった検証があれば理由を明記している。
-- 差分を見直し、意図しない変更や秘密情報の混入がないことを確認している。
-
-## Reporting
-- 変更内容を簡潔に述べる。
-- 変更理由を述べる。
-- 実行した検証コマンドと結果を述べる。
-- 未実施の検証や懸念点があれば省略せず書く。
+- `plugins/kyarameru-tool-box/.codex-plugin/plugin.json`
+- `plugins/kyarameru-tool-box/AGENTS.md`
+- `plugins/kyarameru-tool-box/config.toml`
+- `tests/`

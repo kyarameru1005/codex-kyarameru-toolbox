@@ -1,4 +1,0 @@
-interface:
-  display_name: "Argo Git Flow"
-  short_description: "Gitブランチ、コミット、push、PR作成"
-  default_prompt: "$argo-git-flow を使って、ブランチ準備、コミット、push、PR作成を安全に進めてください。"
