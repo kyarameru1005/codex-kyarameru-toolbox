@@ -1,185 +1,20 @@
 # kyarameru-tool-box
 
-Codex の設定一式を toolbox として管理し、必要な toolbox だけを `~/.codex` へ安全に適用するためのリポジトリです。
+このリポジトリは、単一の Codex プラグイン `kyarameru-tool-box` を配布するための土台です。
+旧来の `toolbox` 複数管理と `~/.codex` 置換スクリプトは廃止し、プラグインを起点に再構成します。
 
-認証情報、履歴、ログ、セッション、DB、キャッシュなどの実行時データは扱いません。
-このリポジトリで配布するのは、再利用できる設定ファイルと設定ディレクトリだけです。
+## 現在の構成
 
-## Toolbox
+- `plugins/kyarameru-tool-box/`: 配布するプラグイン本体
+- `tests/`: プラグイン構成の確認
 
-- `toolbox/`: 初期状態へ戻すための最小 toolbox。
-- `toolbox-greece/`: 設定済み toolbox 第1号。Zeus などの役割別エージェントと作業スキルを含みます。
-- `toolbox-名前/`: 今後追加する配布用 toolbox。用途やテーマごとに増やします。
+## 入口
 
-## まず使う
+- プラグイン定義: [`plugins/kyarameru-tool-box/.codex-plugin/plugin.json`](plugins/kyarameru-tool-box/.codex-plugin/plugin.json)
+- リポジトリ方針: [`AGENTS.md`](AGENTS.md)
 
-1. 現在の状態を確認します。
+## 進め方
 
-```bash
-python3 scripts/toolbox-manager.py status
-```
-
-2. `toolbox-greece/` を適用した場合の変更内容を確認します。
-
-```bash
-python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --dry-run
-```
-
-3. 問題なければ、バックアップ付きで `~/.codex` へ適用します。
-
-```bash
-python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --safe
-```
-
-4. 初期状態へ戻したい場合も、先に dry-run します。
-
-```bash
-python3 scripts/toolbox-manager.py apply --toolbox toolbox --dry-run
-python3 scripts/toolbox-manager.py apply --toolbox toolbox --safe
-```
-
-詳しい導入手順は [Getting Started](docs/distribution/getting-started.md) を参照してください。
-
-## できること
-
-- toolbox を `~/.codex` へ安全に適用する。
-- 適用前に `--dry-run` で変更予定を確認する。
-- `--safe` で既存設定をバックアップしてから置換する。
-- `toolbox/` から新しい `toolbox-名前/` を作る。
-- 適用済みの管理対象を `~/.codex/.kyarameru-tool-box-manifest.json` に記録する。
-- Rust 製 `moira` で、タスクと再開コンテキストを `.ai/moira.json` にローカル管理する。
-
-## コマンド
-
-### moira
-
-```bash
-cd apps/moira && cargo install --path .   # ~/.cargo/bin/moira（Rust 不要のバイナリ導入は apps/moira/README.md 参照）
-
-moira init                       # cwd に .ai/moira.json を作成
-moira add "設計を書く"           # タスク追加（todo）
-moira list                       # 一覧（[ ]=todo [~]=進行中 [x]=完了）
-moira start 1                    # 進行中へ
-moira done 1                     # 完了へ
-
-# 再開コンテキスト
-moira goal "moira に統一する"
-moira at "実装中"
-moira next "cargo test を通す"
-moira decide "保存形式は .ai/moira.json 単体に決定"
-
-moira show                       # 再開ビュー（meta + タスク）
-moira show --json                # 機械可読（エージェント連携用）
-```
-
-`moira` は、長い Codex 作業がトークン枯渇で要約・断絶しても再開できるよう、目的・現在地・次の一手・決定ログ・タスク状態をディスク上の `.ai/moira.json` で管理するコマンドです。
-`.ai/` は実行時データなのでコミットしません（`.gitignore` 済み）。
-詳しい導入・更新・削除は [apps/moira/README.md](apps/moira/README.md) を参照してください。
-
-### status
-
-```bash
-python3 scripts/toolbox-manager.py status [--toolbox toolbox] [--codex-home ~/.codex]
-```
-
-指定した toolbox と `~/.codex` の管理対象を比較し、`current`, `different`, `missing` を表示します。
-
-### apply
-
-```bash
-python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --dry-run
-python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --safe
-python3 scripts/toolbox-manager.py apply --toolbox toolbox-greece --force
-```
-
-指定した toolbox を `~/.codex` へ置換します。
-
-- `--dry-run`: 変更予定だけを表示する。
-- `--safe`: バックアップ付きで置換する。
-- `--force`: バックアップなしで置換する。
-
-通常は `--dry-run` のあとに `--safe` を使ってください。
-`--force` はバックアップ不要と判断できる場合だけ使います。
-
-### copy
-
-```bash
-python3 scripts/toolbox-manager.py copy [--source toolbox] [--name greece] [--dry-run]
-```
-
-`--source` で指定した toolbox を、`--name` で指定した `toolbox-名前/` へ複製します。
-認証情報、履歴、DB、ログ、セッション、キャッシュなどの除外対象は複製しません。
-
-## 置換対象
-
-`apply` が `~/.codex` で置き換える対象は次に限定します。
-空ディレクトリ保持用の `.gitkeep` は置換対象に含めません。
-
-- `config.toml`
-- `AGENTS.md`
-- `skills/`
-- `agents/`
-- `hooks/`
-- `prompts/`
-- `plugins/`
-- `mcp/`
-- `memories/`
-
-## 置換しないもの
-
-次のファイルやディレクトリは `~/.codex` で置き換えません。
-
-- `auth.json`
-- `history.jsonl`
-- `session_index.jsonl`
-- `installation_id`
-- `*.sqlite*`
-- `log/`
-- `sessions/`
-- `shell_snapshots/`
-- `tmp/`
-- `.tmp/`
-- `cache/`
-- `vendor_imports/`
-- `models_cache.json`
-- `.codex-global-state.json`
-
-## リポジトリ構造
-
-- `toolbox/`: 初期状態へ戻すための Codex 設定原本。
-- `toolbox-greece/`: 配布用 toolbox 第1号。
-- `apps/moira/`: タスクと再開コンテキストを管理する Rust 製 CLI。
-- `scripts/`: toolbox の複製、適用、確認を行うスクリプト。
-- `tests/`: Python スクリプトの単体テスト。
-- `docs/distribution/`: 配布用の運用文書。
-- `docs/private/`: 個人研究用のローカル文書。Git では追跡しません。
-
-詳細は [Repository Layout](docs/distribution/repository-layout.md) を参照してください。
-
-## 開発と検証
-
-開発依存は初回のみ入れます。
-
-```bash
-python3 -m pip install -e '.[dev]'
-```
-
-テストを実行します。
-
-```bash
-cargo test
-python3 -m pytest -q
-```
-
-`AGENTS.md` チェック用スクリプトが存在する場合は次も実行します。
-
-```bash
-bash toolbox/skills/bootstrap-repository/scripts/check-agents-md.sh AGENTS.md
-```
-
-## 安全メモ
-
-- 実運用の `~/.codex` へ適用する前に、必ず `--dry-run` で確認する。
-- 既存の `~/.codex` を変更する場合は、原則 `--safe` を使う。
-- 認証情報や履歴を toolbox に含めない。
-- 個人研究用の文書は `docs/private/` に置き、配布対象にしない。
+1. まず `plugins/kyarameru-tool-box/` を編集する
+2. 必要なら `agents/` と `skills/` を追加する
+3. 変更後は `python3 -m pytest -q` で確認する

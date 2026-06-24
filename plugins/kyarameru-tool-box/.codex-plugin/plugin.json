@@ -1,0 +1,16 @@
+{
+  "name": "kyarameru-tool-box",
+  "version": "1.0.0",
+  "description": "Norse-themed Codex plugin scaffold.",
+  "author": {
+    "name": "Kyarameru"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Kyarameru Tool Box",
+    "shortDescription": "Norse-themed Codex plugin scaffold.",
+    "longDescription": "A clean plugin rebuilt from scratch with Norse role names.",
+    "developerName": "Kyarameru",
+    "category": "Productivity"
+  }
+}

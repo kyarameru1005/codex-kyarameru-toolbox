@@ -1,0 +1,8 @@
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+features.multi_agent = true
+
+[project_doc]
+fallback_filenames = ["AGENTS.md"]
