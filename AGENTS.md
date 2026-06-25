@@ -1,6 +1,6 @@
 # AGENTS.md
 
-このリポジトリでは、単一プラグイン `plugins/kyarameru-tool-box/` を基準に作業する。
+このリポジトリでは、単一プラグイン `plugins/norse-toolbox/` を基準に作業する。
 
 ## ルール
 
@@ -13,7 +13,7 @@
 
 ## 確認対象
 
-- `plugins/kyarameru-tool-box/.codex-plugin/plugin.json`
-- `plugins/kyarameru-tool-box/AGENTS.md`
-- `plugins/kyarameru-tool-box/config.toml`
+- `plugins/norse-toolbox/.codex-plugin/plugin.json`
+- `plugins/norse-toolbox/AGENTS.md`
+- `plugins/norse-toolbox/config.toml`
 - `tests/`
