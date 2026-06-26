@@ -1,0 +1,27 @@
+{
+  "name": "norse-toolbox",
+  "version": "1.0.0",
+  "description": "Norse mythology themed Codex task orchestration scaffold anchored by Odin.",
+  "author": {
+    "name": "Kyarameru",
+    "url": "https://github.com/kyarameru1005"
+  },
+  "homepage": "https://github.com/kyarameru1005/kyarameru-tool-box",
+  "repository": "https://github.com/kyarameru1005/kyarameru-tool-box",
+  "keywords": ["codex", "plugin", "orchestration", "norse"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Norse Toolbox",
+    "shortDescription": "Norse-themed Codex orchestration scaffold.",
+    "longDescription": "A Codex task orchestration scaffold themed around Norse mythology, with Odin as the first entry point for deciding role selection and execution order.",
+    "developerName": "Kyarameru",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "websiteURL": "https://github.com/kyarameru1005/kyarameru-tool-box",
+    "defaultPrompt": [
+      "Use Odin to decide whether this task needs Heimdall, Mimir, Thor, Tyr, Forseti, and Bragi, then give the minimum execution order.",
+      "Start with Odin, collect the goal, constraints, and done conditions, and route investigation work to Heimdall before any design or implementation begins.",
+      "Have Odin produce an implementation flow that includes Thor for changes, Tyr for test updates, Forseti for review, and Bragi for final documentation only when each role is necessary."
+    ]
+  }
+}
