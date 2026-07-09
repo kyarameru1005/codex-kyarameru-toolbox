@@ -15,14 +15,14 @@
 ## 進め方
 
 1. まず `plugins/norse-toolbox/` を編集する
-2. 必要なら `agents/`、`skills/`、`marketplace.json` を更新する
+2. 必要なら `agents/`、`skills/`、`.agents/plugins/marketplace.json` を更新する
 3. 変更後は `python3 -m pytest -q` で確認する
 
 ## GitHub から追加する
 
 1. marketplace 追加:
-   `https://github.com/kyarameru1005/kyarameru-tool-box.git`
+   `codex plugin marketplace add kyarameru1005/kyarameru-tool-box --sparse .agents/plugins`
 2. plugin 追加:
-   `norse-toolbox@kyarameru-codex`
+   `codex plugin add norse-toolbox@kyarameru-codex`
 
-`Add marketplace` の入力欄では、repo URL として `https://github.com/kyarameru1005/kyarameru-tool-box.git` を指定します。repo root の `marketplace.json` が入口です。
+リポジトリ配布の入口は [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) です。

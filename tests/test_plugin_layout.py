@@ -5,7 +5,7 @@ import json
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_MANIFEST = REPO_ROOT / "plugins" / "norse-toolbox" / ".codex-plugin" / "plugin.json"
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "norse-toolbox"
-MARKETPLACE_FILE = REPO_ROOT / "marketplace.json"
+MARKETPLACE_FILE = REPO_ROOT / ".agents" / "plugins" / "marketplace.json"
 ROLE_NAMES = ["Odin", "Heimdall", "Mimir", "Thor", "Forseti", "Tyr", "Bragi"]
 
 
@@ -41,6 +41,7 @@ def test_repo_marketplace_contains_norse_toolbox():
             "category": "Productivity",
         }
     ]
+    assert not (REPO_ROOT / "marketplace.json").exists()
 
 
 def test_plugin_docs_and_all_skills_exist():

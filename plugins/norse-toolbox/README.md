@@ -11,7 +11,7 @@
 - `AGENTS.md`: この plugin 内での作業ルール
 - `config.toml`: Codex の基本設定
 - `.codex-plugin/plugin.json`: plugin 名、表示名、既定プロンプト
-- `../../marketplace.json`: GitHub 配布時の marketplace 定義
+- `../../.agents/plugins/marketplace.json`: GitHub 配布時の marketplace 定義
 - `agents/README.md`: 役割一覧と agent 運用ルール
 - `agents/odin.toml`: Odin agent の定義
 - `agents/heimdall.toml`: 調査役 Heimdall agent の定義
@@ -43,10 +43,10 @@
 
 ## マーケットプレイス配布
 
-- repo root の marketplace は `marketplace.json`
+- repo marketplace は `.agents/plugins/marketplace.json`
 - marketplace 名は `kyarameru-codex`
 - plugin エントリは `norse-toolbox` を `./plugins/norse-toolbox` として公開する
-- GitHub から追加する場合は `codex plugin marketplace add https://github.com/kyarameru1005/kyarameru-tool-box.git` を使う
+- GitHub から追加する場合は `codex plugin marketplace add kyarameru1005/kyarameru-tool-box --sparse .agents/plugins` を使う
 - marketplace 追加後は `codex plugin add norse-toolbox@kyarameru-codex` で導入できる
 
 ## 典型フロー
