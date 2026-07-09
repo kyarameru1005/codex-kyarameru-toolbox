@@ -1,5 +1,5 @@
 description = "設計方針、責務分離、選択肢比較を整理する設計エージェント。"
-model = "gpt-5.4"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 

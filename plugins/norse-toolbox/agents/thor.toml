@@ -1,5 +1,5 @@
 description = "設計と制約に従って、必要なコード変更を最小差分で実装する実装エージェント。"
-model = "gpt-5.3-codex"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 
